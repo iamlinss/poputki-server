@@ -3,4 +3,6 @@
 
 [Макет дизайна Программного средства](https://www.figma.com/design/PQkgQu3JMsPId5t9dff724/%D0%94%D0%B8%D0%B7%D0%B0%D0%B9%D0%BD-%D0%B4%D0%B8%D0%BF%D0%BB%D0%BE%D0%BC?node-id=0-1&node-type=canvas&t=rwB2GEdUHnWTJIzY-0)
 
-[С4 Container](doc/C4 - Container.jpg)
+В системе Попутки реализована интеграция нескольких ключевых веб-приложений и серверного приложения. Система предназначена для упрощения процесса совместных поездок и оптимизации взаимодействия между пассажирами и водителями. Она включает в себя три основных веб-приложения: Пассажир, Водитель.
+
+[C4 Container](https://github.com/iamlinss/Popytki/blob/main/doc/C4%20-%20Container.jpg)
