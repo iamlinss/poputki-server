@@ -1,8 +1,8 @@
-package org.smirnova.poputka.auth;
+package org.bratanov.poputka.auth;
 
 
-import org.smirnova.poputka.auth.domain.AuthUser;
-import org.smirnova.poputka.repositories.UserRepository;
+import org.bratanov.poputka.auth.domain.AuthUser;
+import org.bratanov.poputka.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

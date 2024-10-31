@@ -1,9 +1,9 @@
-package org.smirnova.poputka.repositories;
+package org.bratanov.poputka.repositories;
 
-import org.smirnova.poputka.domain.entities.CityEntity;
-import org.smirnova.poputka.domain.entities.StatusEntity;
-import org.smirnova.poputka.domain.entities.TripEntity;
-import org.smirnova.poputka.domain.entities.UserEntity;
+import org.bratanov.poputka.domain.entities.CityEntity;
+import org.bratanov.poputka.domain.entities.StatusEntity;
+import org.bratanov.poputka.domain.entities.TripEntity;
+import org.bratanov.poputka.domain.entities.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

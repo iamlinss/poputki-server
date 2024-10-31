@@ -1,8 +1,8 @@
-package org.smirnova.poputka.mappers.impl;
+package org.bratanov.poputka.mappers.impl;
 
-import org.smirnova.poputka.domain.dto.CarDto;
-import org.smirnova.poputka.domain.entities.CarEntity;
-import org.smirnova.poputka.mappers.Mapper;
+import org.bratanov.poputka.domain.dto.CarDto;
+import org.bratanov.poputka.domain.entities.CarEntity;
+import org.bratanov.poputka.mappers.Mapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 

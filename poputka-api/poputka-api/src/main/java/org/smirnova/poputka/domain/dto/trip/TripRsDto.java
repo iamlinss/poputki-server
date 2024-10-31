@@ -1,13 +1,13 @@
-package org.smirnova.poputka.domain.dto.trip;
+package org.bratanov.poputka.domain.dto.trip;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.smirnova.poputka.domain.dto.CarDto;
-import org.smirnova.poputka.domain.entities.CityEntity;
-import org.smirnova.poputka.domain.entities.StatusEntity;
+import org.bratanov.poputka.domain.dto.CarDto;
+import org.bratanov.poputka.domain.entities.CityEntity;
+import org.bratanov.poputka.domain.entities.StatusEntity;
 
 import java.time.LocalDateTime;
 

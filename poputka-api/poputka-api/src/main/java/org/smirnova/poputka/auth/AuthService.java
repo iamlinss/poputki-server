@@ -1,13 +1,14 @@
-package org.smirnova.poputka.auth;
+package org.bratanov.poputka.auth;
 
 
-import org.smirnova.poputka.auth.domain.AuthUser;
-import org.smirnova.poputka.repositories.UserRepository;
+import org.bratanov.poputka.auth.domain.AuthUser;
+import org.bratanov.poputka.repositories.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;

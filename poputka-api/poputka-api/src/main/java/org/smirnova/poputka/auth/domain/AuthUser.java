@@ -1,7 +1,7 @@
-package org.smirnova.poputka.auth.domain;
+package org.bratanov.poputka.auth.domain;
 
 
-import org.smirnova.poputka.domain.entities.UserEntity;
+import org.bratanov.poputka.domain.entities.UserEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 

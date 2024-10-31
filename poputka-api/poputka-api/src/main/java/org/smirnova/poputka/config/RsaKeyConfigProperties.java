@@ -1,4 +1,4 @@
-package org.smirnova.poputka.config;
+package org.bratanov.poputka.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

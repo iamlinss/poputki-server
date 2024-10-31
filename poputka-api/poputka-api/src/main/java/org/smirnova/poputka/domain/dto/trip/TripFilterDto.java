@@ -1,4 +1,4 @@
-package org.smirnova.poputka.domain.dto.trip;
+package org.bratanov.poputka.domain.dto.trip;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

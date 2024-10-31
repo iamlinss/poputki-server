@@ -1,6 +1,6 @@
-package org.smirnova.poputka.services;
+package org.bratanov.poputka.services;
 
-import org.smirnova.poputka.domain.entities.UserEntity;
+import org.bratanov.poputka.domain.entities.UserEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

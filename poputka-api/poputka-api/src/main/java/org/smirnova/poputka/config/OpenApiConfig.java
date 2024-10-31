@@ -1,4 +1,4 @@
-package org.smirnova.poputka.config;
+package org.bratanov.poputka.config;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
@@ -10,9 +10,8 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
 @OpenAPIDefinition(
         info = @Info(
                 contact = @Contact(
-                        name = "Smirnova",
-                        url = "https://github.com/iamlinss/Popytki"
-
+                        name = "Bratanov",
+                        email = "bratanov.misha@mail.ru"
                 ),
                 description = "POPUTKA service documentation",
                 title = "POPUTKA API"

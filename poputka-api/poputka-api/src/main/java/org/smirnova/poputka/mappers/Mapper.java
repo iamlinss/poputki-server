@@ -1,4 +1,4 @@
-package org.smirnova.poputka.mappers;
+package org.bratanov.poputka.mappers;
 
 public interface Mapper<A, B> {
 
