@@ -1,8 +1,8 @@
-package org.bratanov.poputka.auth;
+package org.smirnova.poputka.auth;
 
 
-import org.bratanov.poputka.auth.domain.AuthUser;
-import org.bratanov.poputka.repositories.UserRepository;
+import org.smirnova.poputka.auth.domain.AuthUser;
+import org.smirnova.poputka.repositories.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

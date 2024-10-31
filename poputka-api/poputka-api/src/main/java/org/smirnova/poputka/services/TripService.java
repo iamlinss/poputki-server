@@ -1,10 +1,10 @@
-package org.bratanov.poputka.services;
+package org.smirnova.poputka.services;
 
-import org.bratanov.poputka.domain.dto.trip.TripRqDto;
-import org.bratanov.poputka.domain.dto.trip.TripFilterDto;
-import org.bratanov.poputka.domain.dto.trip.TripRsDto;
-import org.bratanov.poputka.domain.dto.trip.TripDto;
-import org.bratanov.poputka.domain.entities.TripEntity;
+import org.smirnova.poputka.domain.dto.trip.TripRqDto;
+import org.smirnova.poputka.domain.dto.trip.TripFilterDto;
+import org.smirnova.poputka.domain.dto.trip.TripRsDto;
+import org.smirnova.poputka.domain.dto.trip.TripDto;
+import org.smirnova.poputka.domain.entities.TripEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

@@ -1,9 +1,9 @@
-package org.bratanov.poputka.services.impl;
+package org.smirnova.poputka.services.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.bratanov.poputka.domain.entities.StatusEntity;
-import org.bratanov.poputka.repositories.StatusRepository;
-import org.bratanov.poputka.services.StatusService;
+import org.smirnova.poputka.domain.entities.StatusEntity;
+import org.smirnova.poputka.repositories.StatusRepository;
+import org.smirnova.poputka.services.StatusService;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;

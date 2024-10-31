@@ -1,8 +1,8 @@
-package org.bratanov.poputka;
+package org.smirnova.poputka;
 
-import org.bratanov.poputka.config.RsaKeyConfigProperties;
-import org.bratanov.poputka.domain.entities.UserEntity;
-import org.bratanov.poputka.repositories.UserRepository;
+import org.smirnova.poputka.config.RsaKeyConfigProperties;
+import org.smirnova.poputka.domain.entities.UserEntity;
+import org.smirnova.poputka.repositories.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

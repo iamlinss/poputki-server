@@ -1,13 +1,13 @@
-package org.bratanov.poputka.controllers;
+package org.smirnova.poputka.controllers;
 
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.bratanov.poputka.domain.entities.CityEntity;
-import org.bratanov.poputka.domain.entities.StatusEntity;
-import org.bratanov.poputka.services.DataService;
+import org.smirnova.poputka.domain.entities.CityEntity;
+import org.smirnova.poputka.domain.entities.StatusEntity;
+import org.smirnova.poputka.services.DataService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;

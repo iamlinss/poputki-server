@@ -1,4 +1,4 @@
-package org.bratanov.poputka.auth.domain.dto;
+package org.smirnova.poputka.auth.domain.dto;
 
 public class AuthDTO {
     public record LoginRequest(String email, String password) {

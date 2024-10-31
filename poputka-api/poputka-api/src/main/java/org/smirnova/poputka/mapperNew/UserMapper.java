@@ -1,7 +1,7 @@
-package org.bratanov.poputka.mapperNew;
+package org.smirnova.poputka.mapperNew;
 
-import org.bratanov.poputka.domain.dto.UserEditDto;
-import org.bratanov.poputka.domain.entities.UserEntity;
+import org.smirnova.poputka.domain.dto.UserEditDto;
+import org.smirnova.poputka.domain.entities.UserEntity;
 import org.mapstruct.Mapper;
 
 @Mapper

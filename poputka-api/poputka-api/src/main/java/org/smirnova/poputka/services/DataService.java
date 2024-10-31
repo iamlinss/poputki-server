@@ -1,8 +1,8 @@
-package org.bratanov.poputka.services;
+package org.smirnova.poputka.services;
 
 import jdk.jshell.Snippet;
-import org.bratanov.poputka.domain.entities.CityEntity;
-import org.bratanov.poputka.domain.entities.StatusEntity;
+import org.smirnova.poputka.domain.entities.CityEntity;
+import org.smirnova.poputka.domain.entities.StatusEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

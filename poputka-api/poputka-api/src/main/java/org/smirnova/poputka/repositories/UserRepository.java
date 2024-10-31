@@ -1,6 +1,6 @@
-package org.bratanov.poputka.repositories;
+package org.smirnova.poputka.repositories;
 
-import org.bratanov.poputka.domain.entities.UserEntity;
+import org.smirnova.poputka.domain.entities.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

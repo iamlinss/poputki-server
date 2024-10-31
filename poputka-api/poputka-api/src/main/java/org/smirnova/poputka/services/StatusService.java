@@ -1,6 +1,6 @@
-package org.bratanov.poputka.services;
+package org.smirnova.poputka.services;
 
-import org.bratanov.poputka.domain.entities.StatusEntity;
+import org.smirnova.poputka.domain.entities.StatusEntity;
 import org.springframework.stereotype.Service;
 
 @Service

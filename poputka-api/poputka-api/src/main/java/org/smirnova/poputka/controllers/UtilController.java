@@ -1,4 +1,4 @@
-package org.bratanov.poputka.controllers;
+package org.smirnova.poputka.controllers;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -6,13 +6,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.bratanov.poputka.auth.domain.dto.AuthDTO;
-import org.bratanov.poputka.auth.AuthService;
-import org.bratanov.poputka.auth.domain.AuthUser;
-import org.bratanov.poputka.domain.dto.UserDto;
-import org.bratanov.poputka.domain.entities.UserEntity;
-import org.bratanov.poputka.mappers.Mapper;
-import org.bratanov.poputka.services.UserService;
+import org.smirnova.poputka.auth.domain.dto.AuthDTO;
+import org.smirnova.poputka.auth.AuthService;
+import org.smirnova.poputka.auth.domain.AuthUser;
+import org.smirnova.poputka.domain.dto.UserDto;
+import org.smirnova.poputka.domain.entities.UserEntity;
+import org.smirnova.poputka.mappers.Mapper;
+import org.smirnova.poputka.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;

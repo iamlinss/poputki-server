@@ -1,4 +1,4 @@
-package org.bratanov.poputka.domain.dto;
+package org.smirnova.poputka.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

@@ -1,4 +1,4 @@
-package org.bratanov.poputka.domain.entities;
+package org.smirnova.poputka.domain.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;

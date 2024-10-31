@@ -1,11 +1,11 @@
-package org.bratanov.poputka.services.impl;
+package org.smirnova.poputka.services.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.bratanov.poputka.domain.entities.CarEntity;
-import org.bratanov.poputka.domain.entities.UserEntity;
-import org.bratanov.poputka.repositories.CarRepository;
-import org.bratanov.poputka.repositories.UserRepository;
-import org.bratanov.poputka.services.CarService;
+import org.smirnova.poputka.domain.entities.CarEntity;
+import org.smirnova.poputka.domain.entities.UserEntity;
+import org.smirnova.poputka.repositories.CarRepository;
+import org.smirnova.poputka.repositories.UserRepository;
+import org.smirnova.poputka.services.CarService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

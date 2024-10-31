@@ -1,7 +1,7 @@
-package org.bratanov.poputka.mapperNew;
+package org.smirnova.poputka.mapperNew;
 
-import org.bratanov.poputka.domain.dto.CarDto;
-import org.bratanov.poputka.domain.entities.CarEntity;
+import org.smirnova.poputka.domain.dto.CarDto;
+import org.smirnova.poputka.domain.entities.CarEntity;
 import org.mapstruct.Mapper;
 
 
