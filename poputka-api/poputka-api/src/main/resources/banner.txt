@@ -7,4 +7,4 @@
 Application ${spring.application.name}
 Powered by Spring Boot ${spring-boot.version}
 
------------------------------<3
+----------------------------->
