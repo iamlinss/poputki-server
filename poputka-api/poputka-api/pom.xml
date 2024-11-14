@@ -10,7 +10,7 @@
     </parent>
     <groupId>org.smirnova</groupId>
     <artifactId>poputka</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>v0.0.2</version>
     <name>poputka</name>
     <description>poputka</description>
     <properties>
