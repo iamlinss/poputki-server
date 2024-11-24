@@ -71,12 +71,12 @@ public class UtilController {
                     @ApiResponse(
                             description = "Email найден",
                             responseCode = "302",
-                            content = { @Content(schema = @Schema()) }
+                            content = {@Content(schema = @Schema())}
                     ),
                     @ApiResponse(
                             description = "Email не найден",
                             responseCode = "401",
-                            content = { @Content(schema = @Schema()) }
+                            content = {@Content(schema = @Schema())}
                     )
             }
     )
@@ -97,12 +97,17 @@ public class UtilController {
                     @ApiResponse(
                             description = "Успешно",
                             responseCode = "200",
-                            content = { @Content(schema = @Schema(implementation = AuthDTO.Response.class), mediaType = "application/json") }
-                    )}
+                            content = {@Content(schema = @Schema(implementation = AuthDTO.Response.class), mediaType = "application/json")}
+                    ),
+                    @ApiResponse(
+                            description = "Не авторизован",
+                            responseCode = "401"
+                    )
+            }
     )
     @Validated
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AuthDTO.LoginRequest userLogin) {
+    public ResponseEntity<AuthDTO.Response> login(@RequestBody AuthDTO.LoginRequest userLogin) {
         log.info("CALL: Login user: {}", userLogin);
 
         Authentication authentication;
@@ -117,14 +122,18 @@ public class UtilController {
 
             AuthUser userDetails = (AuthUser) authentication.getPrincipal();
 
+            log.info("Token generated for user: {}", userDetails.getUsername());
 
-            log.info("Token requested for user :{}", authentication.getAuthorities());
+            String token = authService.generateToken(authentication);
+            UserEntity userEntity = userDetails.getUser();
+            UserDto userDto = userMapper.mapTo(userEntity);
+
+            // Возвращаем токен и данные пользователя
+            return ResponseEntity.ok(new AuthDTO.Response(token, userDto));
 
         } catch (Exception ex) {
+            log.error("Login failed: {}", ex.getMessage());
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
-        String token = authService.generateToken(authentication);
-        AuthDTO.Response response = new AuthDTO.Response(token);
-        return ResponseEntity.ok(response);
     }
 }
