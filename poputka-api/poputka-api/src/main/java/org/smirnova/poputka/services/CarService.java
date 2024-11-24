@@ -19,4 +19,6 @@ public interface CarService {
     boolean isExists(Long id);
 
     void remove(CarEntity carEntity);
+
+    Optional<Double> calculatePrice(String cityFrom, String cityTo);
 }
