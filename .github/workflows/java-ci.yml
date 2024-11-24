@@ -1,0 +1,31 @@
+name: Java CI with Maven
+
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+    branches: ["master"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Шаг проверки исходного кода
+      - uses: actions/checkout@v4
+
+      # Установка JDK 17
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+          cache: maven
+
+      # Смена директории на расположение проекта
+      - name: Change to project directory
+        run: cd poputka-api/poputka-api/
+
+      # Сборка проекта с использованием Maven
+      - name: Build with Maven (without tests)
+        run: mvn -B package --file poputka-api/poputka-api/pom.xml -DskipTests
