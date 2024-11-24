@@ -73,6 +73,8 @@ public class SecurityConfig {
                     auth.requestMatchers("/api/util/**").permitAll();
                     auth.requestMatchers("/api/trips/filter").permitAll();
                     auth.requestMatchers("/api/data/**").permitAll();
+                    auth.requestMatchers("/api/cities/**").permitAll();
+                    auth.requestMatchers("/api/statuses/**").permitAll();
                     auth.requestMatchers("/error/**").permitAll();
                     auth.requestMatchers("/v2/api-docs",
                             "/v3/api-docs",
