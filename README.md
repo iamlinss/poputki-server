@@ -56,3 +56,71 @@
 
 [Водитель](https://github.com/iamlinss/Popytki/blob/main/doc/user%20flow%20(%D0%92%D0%BE%D0%B4%D0%B8%D1%82%D0%B5%D0%BB%D1%8C).png)
 
+## Развёртывание
+
+Для развёртывания приложения доступно два подхода: с использованием Docker и без него. Ниже описаны оба метода.
+
+### Развёртывание с использованием Docker
+
+1. **Клонируйте репозиторий**:
+   ```bash
+   git clone https://github.com/iamlinss/poputki-server.git
+   cd poputki-server
+   ```
+
+2. **Перейдите к директории с Dockerfile**:
+   ```bash
+   cd poputka-api/poputka-api
+   ```
+
+3. **Постройте Docker-образ**:
+   ```bash
+   docker build -t poputki-server .
+   ```
+
+4. **Запустите контейнер с передачей параметров подключения к базе данных**:
+   ```bash
+   docker run -d -p 8080:8080 \
+     -e SPRING_DATASOURCE_URL=jdbc:postgresql://<ваш-хост>:<ваш-порт>/<ваша-база> \
+     -e SPRING_DATASOURCE_USERNAME=<ваш-юзер> \
+     -e SPRING_DATASOURCE_PASSWORD=<ваш-пароль> \
+     --name poputki-server poputki-server
+   ```
+
+5. **Проверьте работу приложения**:
+   Перейдите в браузере по адресу [http://localhost:8080](http://localhost:8080).
+
+### Развёртывание без использования Docker
+
+1. **Клонируйте репозиторий**:
+   ```bash
+   git clone https://github.com/iamlinss/poputki-server.git
+   cd poputki-server
+   ```
+
+2. **Настройте параметры подключения к базе данных**:
+   Отредактируйте файл `application.properties`, расположенный по пути:
+   ```
+   poputka-api/poputka-api/src/main/resources/application.properties
+   ```
+   Убедитесь, что строки с параметрами подключения выглядят корректно:
+   ```properties
+   spring.datasource.url=jdbc:postgresql://<ваш-хост>:<ваш-порт>/<ваша-база>
+   spring.datasource.username=<ваш-юзер>
+   spring.datasource.password=<ваш-пароль>
+   ```
+
+3. **Соберите проект**:
+   Убедитесь, что у вас установлен Maven, затем выполните:
+   ```bash
+   cd poputka-api/poputka-api
+   mvn clean package
+   ```
+
+4. **Запустите приложение**:
+   ```bash
+   java -jar target/poputka-v0.0.2.jar
+   ```
+
+5. **Проверьте работу приложения**:
+   Перейдите в браузере по адресу [http://localhost:8080](http://localhost:8080).
