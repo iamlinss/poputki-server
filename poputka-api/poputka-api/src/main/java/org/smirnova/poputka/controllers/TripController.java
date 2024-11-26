@@ -15,7 +15,7 @@ import org.smirnova.poputka.domain.entities.PassengerEntity;
 import org.smirnova.poputka.domain.entities.TripEntity;
 import org.smirnova.poputka.mappers.Mapper;
 import org.smirnova.poputka.mappers.impl.UserMapperImpl;
-import org.smirnova.poputka.repositories.PassengerRepositiry;
+import org.smirnova.poputka.repositories.PassengerRepository;
 import org.smirnova.poputka.repositories.TripRepository;
 import org.smirnova.poputka.repositories.UserRepository;
 import org.smirnova.poputka.services.TripService;
@@ -41,7 +41,7 @@ public class TripController {
     private final UserRepository userRepository;
     private final UserMapperImpl userMapperImpl;
     private final TripRepository tripRepository;
-    private final PassengerRepositiry passengerRepositiry;
+    private final PassengerRepository passengerRepository;
 
     @Operation(
             description = "Создание поездки (id не нужно передавать, так на всякий оставил)",
@@ -55,12 +55,12 @@ public class TripController {
                     @ApiResponse(
                             description = "Не авторизован/ Токен не валидный",
                             responseCode = "401",
-                            content = { @Content(schema = @Schema()) }
+                            content = {@Content(schema = @Schema())}
                     ),
                     @ApiResponse(
                             description = "Не найден",
                             responseCode = "404",
-                            content = { @Content(schema = @Schema()) }
+                            content = {@Content(schema = @Schema())}
                     )
             }
     )
@@ -69,14 +69,14 @@ public class TripController {
     public ResponseEntity<TripRsDto> createTrip(@RequestBody TripRqDto trip) {
         log.info("CALL: Create trip: {}", trip);
 
-        TripDto tripDto = new TripDto();
+        TripDto tripDto;
         try {
             tripDto = tripService.daoToDto(trip);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        tripDto.getUser().setTripAmount(tripDto.getUser().getTripAmount()+1);
+        tripDto.getUser().setTripAmount(tripDto.getUser().getTripAmount() + 1);
         TripEntity tripEntity = tripMapper.mapFrom(tripDto);
 
         TripEntity savedTripEntity = tripService.save(tripEntity);
@@ -120,7 +120,7 @@ public class TripController {
                     @ApiResponse(
                             description = "Не найден",
                             responseCode = "404",
-                            content = { @Content(schema = @Schema()) }
+                            content = {@Content(schema = @Schema())}
                     )
             }
     )
@@ -151,12 +151,12 @@ public class TripController {
                     @ApiResponse(
                             description = "Не авторизован/ Токен не валидный",
                             responseCode = "401",
-                            content = { @Content(schema = @Schema()) }
+                            content = {@Content(schema = @Schema())}
                     ),
                     @ApiResponse(
                             description = "Не найден",
                             responseCode = "404",
-                            content = { @Content(schema = @Schema()) }
+                            content = {@Content(schema = @Schema())}
                     )
             }
     )
@@ -165,10 +165,10 @@ public class TripController {
     public ResponseEntity<TripRsDto> broneTrip(@RequestBody PassengerEntity passengerEntity) {
         log.info("CALL: Brone trip: {}", passengerEntity);
         TripEntity tripEntity = tripRepository.findById(passengerEntity.getTripId()).orElse(null);
-        if(tripEntity != null){
+        if (tripEntity != null) {
             tripEntity.setSeats(tripEntity.getSeats() - passengerEntity.getSeats());
             TripEntity savedTripEntity = tripService.save(tripEntity);
-            passengerRepositiry.save(passengerEntity);
+            passengerRepository.save(passengerEntity);
             return new ResponseEntity<>(tripService.dtoToInfoDao(tripMapper.mapTo(savedTripEntity)), HttpStatus.CREATED);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -186,7 +186,7 @@ public class TripController {
                     @ApiResponse(
                             description = "Не найден",
                             responseCode = "404",
-                            content = { @Content(schema = @Schema()) }
+                            content = {@Content(schema = @Schema())}
                     )
             }
     )
@@ -195,11 +195,11 @@ public class TripController {
     public ResponseEntity<List<TripRsDto>> getUserBronedTrips(@PathVariable Long id) {
         log.info("CALL: Get user broned trips by user ID {}", id);
 
-        List<PassengerEntity> passengers = passengerRepositiry.findAllByUserId(id);
+        List<PassengerEntity> passengers = passengerRepository.findAllByUserId(id);
         List<TripEntity> tripEntityList = new ArrayList<>();
         for (PassengerEntity passenger : passengers) {
             TripEntity trip = tripRepository.findById(passenger.getTripId()).orElse(null);
-            if(trip != null) {
+            if (trip != null) {
                 trip.setSeats(passenger.getSeats());
                 tripEntityList.add(trip);
             }

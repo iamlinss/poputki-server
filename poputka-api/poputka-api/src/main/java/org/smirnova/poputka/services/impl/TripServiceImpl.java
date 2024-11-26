@@ -12,7 +12,6 @@ import org.smirnova.poputka.mappers.Mapper;
 import org.smirnova.poputka.repositories.CityRepository;
 import org.smirnova.poputka.repositories.StatusRepository;
 import org.smirnova.poputka.repositories.TripRepository;
-import org.smirnova.poputka.repositories.UserRepository;
 import org.smirnova.poputka.services.CarService;
 import org.smirnova.poputka.services.StatusService;
 import org.smirnova.poputka.services.TripService;
@@ -21,7 +20,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.StreamSupport;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +28,6 @@ public class TripServiceImpl implements TripService {
     private final TripRepository tripRepository;
     private final CityRepository cityRepository;
     private final UserService userService;
-    private final UserRepository userRepository;
     private final Mapper<UserEntity, UserDto> userMapper;
     private final CarService carService;
     private final Mapper<CarEntity, CarDto> carMapper;
@@ -54,23 +51,23 @@ public class TripServiceImpl implements TripService {
                 statusService.getCreatedStatus(),
                 user,
                 carToDto(tripRqDto.getCarId()),
-                user.getFirstName()+" "+user.getLastName(),
+                user.getFirstName() + " " + user.getLastName(),
                 tripRqDto.getPrice()
-                );
+        );
     }
 
     @Override
     public TripRsDto dtoToInfoDao(TripDto tripDto) {
         return new TripRsDto(tripDto.getId(),
-                        tripDto.getDepartureLocation(),
-                        tripDto.getDestinationLocation(),
-                        tripDto.getDepartureDateTime(),
-                        tripDto.getDescription(),
-                        tripDto.getSeats(),
-                        tripDto.getStatus(),
-                        tripDto.getDriverName(),
-                        tripDto.getUser().getId(),
-                        tripDto.getCar(),
+                tripDto.getDepartureLocation(),
+                tripDto.getDestinationLocation(),
+                tripDto.getDepartureDateTime(),
+                tripDto.getDescription(),
+                tripDto.getSeats(),
+                tripDto.getStatus(),
+                tripDto.getDriverName(),
+                tripDto.getUser().getId(),
+                tripDto.getCar(),
                 tripDto.getPrice());
     }
 
@@ -79,14 +76,12 @@ public class TripServiceImpl implements TripService {
         CityEntity departure = cityRepository.findById(filter.getDepartureLocationId()).orElse(null);
         CityEntity destination = cityRepository.findById(filter.getDestinationLocationId()).orElse(null);
         StatusEntity status = statusRepository.findById(filter.getStatusId()).orElse(null);
-        return StreamSupport.stream(tripRepository.findAllByFilter(departure,destination, filter.getSeats(), status).spliterator(),false).toList();
+        return tripRepository.findAllByFilter(departure, destination, filter.getSeats(), status).stream().toList();
     }
 
     private UserDto userToDto(Long id) {
         Optional<UserEntity> foundUser = userService.findOne(id);
-        return foundUser.map(userEntity -> {
-            return userMapper.mapTo(userEntity);
-        }).orElse(null);
+        return foundUser.map(userMapper::mapTo).orElse(null);
     }
 
     private UserEntity userIdToEntity(Long id) {
@@ -97,9 +92,7 @@ public class TripServiceImpl implements TripService {
 
     private CarDto carToDto(Long id) {
         Optional<CarEntity> foundCar = carService.findOne(id);
-        return foundCar.map(carEntity -> {
-            return carMapper.mapTo(carEntity);
-        }).orElse(null);
+        return foundCar.map(carMapper::mapTo).orElse(null);
     }
 
     private CityEntity findCity(Long id) {
@@ -109,6 +102,6 @@ public class TripServiceImpl implements TripService {
 
     @Override
     public List<TripEntity> findUserCreatedTrips(Long userId) {
-        return StreamSupport.stream(tripRepository.findAllByUser(userIdToEntity(userId)).spliterator(),false).toList();
+        return tripRepository.findAllByUser(userIdToEntity(userId)).stream().toList();
     }
 }

@@ -28,10 +28,10 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CarController {
 
-    private static final Logger log = LoggerFactory.getLogger(UserController.class);
+    private static final Logger log = LoggerFactory.getLogger(CarController.class);
 
     private final UserService userService;
-    private final  Mapper<CarEntity, CarDto> carMapper;
+    private final Mapper<CarEntity, CarDto> carMapper;
     private final CarService carService;
 
     @Operation(
@@ -45,12 +45,12 @@ public class CarController {
                     @ApiResponse(
                             description = "Не авторизован/ Токен не валидный",
                             responseCode = "401",
-                            content = { @Content(schema = @Schema()) }
+                            content = {@Content(schema = @Schema())}
                     ),
                     @ApiResponse(
                             description = "Не найден",
                             responseCode = "404",
-                            content = { @Content(schema = @Schema()) }
+                            content = {@Content(schema = @Schema())}
                     )
             }
     )
@@ -62,7 +62,7 @@ public class CarController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         Optional<UserEntity> foundUser = userService.findOne(userId);
-        if (!foundUser.isPresent()) {
+        if (foundUser.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         UserEntity userEntity = foundUser.get();
@@ -83,12 +83,12 @@ public class CarController {
                     @ApiResponse(
                             description = "Не авторизован/ Токен не валидный",
                             responseCode = "401",
-                            content = { @Content(schema = @Schema()) }
+                            content = {@Content(schema = @Schema())}
                     ),
                     @ApiResponse(
                             description = "Не найден",
                             responseCode = "404",
-                            content = { @Content(schema = @Schema()) }
+                            content = {@Content(schema = @Schema())}
                     )
             }
     )
@@ -96,11 +96,11 @@ public class CarController {
     public ResponseEntity<CarDto> deleteCar(@PathVariable Long id) {
         log.info("CALL: Delete car with ID {}", id);
 
-        if(!carService.isExists(id)){
+        if (!carService.isExists(id)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         Optional<CarEntity> foundCar = carService.findOne(id);
-        if (!foundCar.isPresent()) {
+        if (foundCar.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         CarEntity carEntity = foundCar.get();

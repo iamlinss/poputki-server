@@ -6,6 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.Collections;
 
 public class AuthUser extends UserEntity implements UserDetails {
 
@@ -29,12 +30,9 @@ public class AuthUser extends UserEntity implements UserDetails {
         return user.getEmail();
     }
 
-    public Long getUserId(){return user.getId();}
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
-
+        return Collections.emptyList();
     }
 
     @Override

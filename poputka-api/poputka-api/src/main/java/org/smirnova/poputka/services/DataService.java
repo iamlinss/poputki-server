@@ -1,6 +1,5 @@
 package org.smirnova.poputka.services;
 
-import jdk.jshell.Snippet;
 import org.smirnova.poputka.domain.entities.CityEntity;
 import org.smirnova.poputka.domain.entities.StatusEntity;
 import org.springframework.stereotype.Service;

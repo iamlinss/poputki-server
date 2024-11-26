@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.StreamSupport;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +23,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserEntity> findAll() {
-        return StreamSupport.stream(userRepository.findAll().spliterator(),false).toList();
+        return userRepository.findAll().stream().toList();
     }
 
     @Override
@@ -35,11 +34,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean isExists(Long id) {
         return userRepository.existsById(id);
-    }
-
-    @Override
-    public void delete(Long id) {
-        userRepository.deleteById(id);
     }
 
     @Override

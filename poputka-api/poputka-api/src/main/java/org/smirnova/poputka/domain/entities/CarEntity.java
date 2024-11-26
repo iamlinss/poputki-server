@@ -26,4 +26,5 @@ public class CarEntity {
 
     private String plateNumber;
 
+    private int maxSeats;
 }

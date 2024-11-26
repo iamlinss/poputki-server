@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface TripRepository extends JpaRepository<TripEntity,Long> {
+public interface TripRepository extends JpaRepository<TripEntity, Long> {
 
     @Query(value = "SELECT T FROM TripEntity T WHERE" +
             " (:departure IS NULL OR T.departureLocation=:departure) AND" +
@@ -23,7 +23,6 @@ public interface TripRepository extends JpaRepository<TripEntity,Long> {
                                      @Param("destination") CityEntity destination,
                                      @Param("seats") int seats,
                                      @Param("status") StatusEntity status);
-    List<TripEntity> findAllByUserId(Long userId);
 
     List<TripEntity> findAllByUser(UserEntity user);
 }

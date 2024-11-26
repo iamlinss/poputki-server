@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class CarMapperImpl implements Mapper<CarEntity, CarDto> {
 
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     public CarMapperImpl(ModelMapper modelMapper) {
         this.modelMapper = modelMapper;

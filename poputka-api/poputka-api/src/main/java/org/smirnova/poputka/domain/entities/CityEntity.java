@@ -1,6 +1,5 @@
 package org.smirnova.poputka.domain.entities;
 
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,4 +21,6 @@ public class CityEntity {
     private String city;
 
     private String country;
+
+    private double coefficient;
 }

@@ -23,4 +23,5 @@ public class CarDto {
 
     private String plateNumber;
 
+    private int maxSeats;
 }

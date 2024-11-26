@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.StreamSupport;
 
 @Service
 @RequiredArgsConstructor
@@ -31,11 +30,6 @@ public class CarServiceImpl implements CarService {
         userRepository.save(userEntity);
         return savedCar;
 
-    }
-
-    @Override
-    public List<CarEntity> findAll() {
-        return StreamSupport.stream(carRepository.findAll().spliterator(), false).toList();
     }
 
     @Override

@@ -7,13 +7,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.smirnova.poputka.domain.dto.CarDto;
 import org.smirnova.poputka.domain.dto.UserDto;
 import org.smirnova.poputka.domain.dto.UserEditDto;
-import org.smirnova.poputka.domain.entities.CarEntity;
 import org.smirnova.poputka.domain.entities.UserEntity;
 import org.smirnova.poputka.mappers.Mapper;
-import org.smirnova.poputka.services.CarService;
 import org.smirnova.poputka.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,8 +32,6 @@ public class UserController {
 
     private final UserService userService;
     private final Mapper<UserEntity, UserDto> userMapper;
-    private final  Mapper<CarEntity, CarDto> carMapper;
-    private final CarService carService;
 
 
     @Operation(
@@ -50,7 +45,7 @@ public class UserController {
                     @ApiResponse(
                             description = "Не авторизован/ Токен не валидный",
                             responseCode = "401",
-                            content = { @Content(schema = @Schema()) }
+                            content = {@Content(schema = @Schema())}
                     )
             }
     )
@@ -76,12 +71,12 @@ public class UserController {
                     @ApiResponse(
                             description = "Не авторизован/ Токен не валидный",
                             responseCode = "401",
-                            content = { @Content(schema = @Schema()) }
+                            content = {@Content(schema = @Schema())}
                     ),
                     @ApiResponse(
                             description = "Не найден",
                             responseCode = "404",
-                            content = { @Content(schema = @Schema()) }
+                            content = {@Content(schema = @Schema())}
                     )
             }
     )
@@ -107,12 +102,12 @@ public class UserController {
                     @ApiResponse(
                             description = "Не авторизован/ Токен не валидный",
                             responseCode = "401",
-                            content = { @Content(schema = @Schema()) }
+                            content = {@Content(schema = @Schema())}
                     ),
                     @ApiResponse(
                             description = "Не найден",
                             responseCode = "404",
-                            content = { @Content(schema = @Schema()) }
+                            content = {@Content(schema = @Schema())}
                     )
             }
     )
@@ -124,7 +119,7 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         Optional<UserEntity> foundUser = userService.findOne(id);
-        if (foundUser.isEmpty()){
+        if (foundUser.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         UserEntity user = foundUser.get();

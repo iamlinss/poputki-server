@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface PassengerRepositiry extends JpaRepository<PassengerEntity, Long> {
+public interface PassengerRepository extends JpaRepository<PassengerEntity, Long> {
     List<PassengerEntity> findAllByUserId(Long userId);
 }

@@ -7,9 +7,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TripMapperImpl implements Mapper<TripEntity,TripDto> {
+public class TripMapperImpl implements Mapper<TripEntity, TripDto> {
 
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     public TripMapperImpl(ModelMapper modelMapper) {
         this.modelMapper = modelMapper;

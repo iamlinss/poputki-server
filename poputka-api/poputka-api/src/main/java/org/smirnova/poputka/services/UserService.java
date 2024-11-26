@@ -17,7 +17,5 @@ public interface UserService {
 
     boolean isExists(Long id);
 
-    void delete(Long id);
-
     boolean isEmailExists(String email);
 }
