@@ -53,4 +53,7 @@ public class UserEntity {
     @JoinColumn
     private List<CarEntity> cars = new ArrayList<>();
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
+    private UserRole role = UserRole.USER;
 }

@@ -115,9 +115,6 @@ public class UserController {
     public ResponseEntity<UserDto> updateUser(@PathVariable Long id, @RequestBody UserEditDto userEdit) {
         log.info("CALL: Update user with ID {}", id);
 
-        if (!userService.isExists(id)) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
         Optional<UserEntity> foundUser = userService.findOne(id);
         if (foundUser.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -129,7 +126,10 @@ public class UserController {
         user.setFirstName(userEdit.getFirstName());
         user.setLastName(userEdit.getLastName());
         user.setPhone(userEdit.getPhone());
+        user.setRole(userEdit.getRole());
+
         UserEntity savedUserEntity = userService.save(user);
         return new ResponseEntity<>(userMapper.mapTo(savedUserEntity), HttpStatus.OK);
     }
+
 }

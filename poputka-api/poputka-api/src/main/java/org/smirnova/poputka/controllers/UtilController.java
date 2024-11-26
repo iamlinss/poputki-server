@@ -57,7 +57,7 @@ public class UtilController {
 
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
         UserEntity userEntity = userMapper.mapFrom(user);
-        userEntity.setRate(5.0);
+        userEntity.setRate(0);
         userEntity.setTripAmount(0);
         userEntity.setRegistrationDate(LocalDate.now());
         UserEntity savedUserEntity = userService.save(userEntity);

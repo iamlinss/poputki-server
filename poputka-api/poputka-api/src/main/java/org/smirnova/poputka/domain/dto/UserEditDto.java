@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.smirnova.poputka.domain.entities.UserRole;
 
 import java.time.LocalDate;
 
@@ -23,4 +24,6 @@ public class UserEditDto {
     private String description;
 
     private String phone;
+
+    private UserRole role;
 }
