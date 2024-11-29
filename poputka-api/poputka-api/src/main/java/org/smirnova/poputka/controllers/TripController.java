@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.smirnova.poputka.domain.dto.trip.TripRqDto;
 import org.smirnova.poputka.domain.dto.trip.TripFilterDto;
@@ -13,6 +14,7 @@ import org.smirnova.poputka.domain.dto.trip.TripRsDto;
 import org.smirnova.poputka.domain.dto.trip.TripDto;
 import org.smirnova.poputka.domain.entities.PassengerEntity;
 import org.smirnova.poputka.domain.entities.TripEntity;
+import org.smirnova.poputka.domain.enums.TripStatus;
 import org.smirnova.poputka.mappers.Mapper;
 import org.smirnova.poputka.mappers.impl.UserMapperImpl;
 import org.smirnova.poputka.repositories.PassengerRepository;
@@ -86,27 +88,51 @@ public class TripController {
     }
 
     @Operation(
-            description = "Может редактироваться (по запросу). Если для фильтра поле отсутствует, то не передавать его! Поля-id значений (кроме кол-ва мест)",
-            summary = "Фильтрация(поиск) поездок",
+            description = "Изменение статуса поездки по ID",
+            summary = "Изменить статус поездки",
             responses = {
-                    @ApiResponse(
-                            description = "Успешно",
-                            responseCode = "200"
-                    )
+                    @ApiResponse(description = "Успешно", responseCode = "200"),
+                    @ApiResponse(description = "Не найдено", responseCode = "404"),
+                    @ApiResponse(description = "Некорректный запрос", responseCode = "400")
+            }
+    )
+    @PutMapping("/{id}/status")
+    public ResponseEntity<Void> updateTripStatus(@PathVariable Long id, @RequestParam TripStatus status) {
+        log.info("CALL: Update trip status. ID: {}, Status: {}", id, status);
+        try {
+            tripService.updateStatus(id, status);
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    @Operation(
+            description = "Фильтрация поездок по параметрам, включая статус",
+            summary = "Фильтрация поездок",
+            responses = {
+                    @ApiResponse(description = "Успешно", responseCode = "200"),
+                    @ApiResponse(description = "Некорректный запрос", responseCode = "400")
             }
     )
     @PostMapping(path = "/filter")
     public ResponseEntity<List<TripRsDto>> filterTrip(@RequestBody TripFilterDto filter) {
         log.info("CALL: Filter trip: {}", filter);
-
-        List<TripEntity> tripEntityList = tripService.filterTrip(filter);
-        List<TripDto> tripDtoList = tripEntityList.stream()
-                .map(tripMapper::mapTo)
-                .toList();
-        List<TripRsDto> tripRsDtoList = tripDtoList.stream()
-                .map(tripService::dtoToInfoDao)
-                .toList();
-        return new ResponseEntity<>(tripRsDtoList, HttpStatus.OK);
+        try {
+            List<TripEntity> tripEntityList = tripService.filterTrip(filter);
+            List<TripDto> tripDtoList = tripEntityList.stream()
+                    .map(tripMapper::mapTo)
+                    .toList();
+            List<TripRsDto> tripRsDtoList = tripDtoList.stream()
+                    .map(tripService::dtoToInfoDao)
+                    .toList();
+            return new ResponseEntity<>(tripRsDtoList, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Error filtering trips", e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
     @Operation(

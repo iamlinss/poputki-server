@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.smirnova.poputka.domain.entities.UserRole;
+import org.smirnova.poputka.domain.enums.UserRole;
 
 import java.time.LocalDate;
 

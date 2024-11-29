@@ -1,5 +1,6 @@
 package org.smirnova.poputka.services.impl;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.smirnova.poputka.domain.dto.trip.TripRqDto;
 import org.smirnova.poputka.domain.dto.trip.TripFilterDto;
@@ -8,6 +9,7 @@ import org.smirnova.poputka.domain.dto.CarDto;
 import org.smirnova.poputka.domain.dto.trip.TripDto;
 import org.smirnova.poputka.domain.dto.UserDto;
 import org.smirnova.poputka.domain.entities.*;
+import org.smirnova.poputka.domain.enums.TripStatus;
 import org.smirnova.poputka.mappers.Mapper;
 import org.smirnova.poputka.repositories.CityRepository;
 import org.smirnova.poputka.repositories.TripRepository;
@@ -36,6 +38,17 @@ public class TripServiceImpl implements TripService {
     }
 
     @Override
+    public void updateStatus(Long id, TripStatus status) {
+        TripEntity trip = tripRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Trip not found with ID: " + id));
+        if (trip.getStatus() == TripStatus.CANCELLED) {
+            throw new IllegalArgumentException("Cannot update status of a cancelled trip.");
+        }
+        trip.setStatus(status);
+        tripRepository.save(trip);
+    }
+
+    @Override
     public TripDto daoToDto(TripRqDto tripRqDto) {
         UserDto user = userToDto(tripRqDto.getUserId());
         return new TripDto(tripRqDto.getId(),
@@ -47,7 +60,8 @@ public class TripServiceImpl implements TripService {
                 user,
                 carToDto(tripRqDto.getCarId()),
                 user.getFirstName() + " " + user.getLastName(),
-                tripRqDto.getPrice()
+                tripRqDto.getPrice(),
+                tripRqDto.getStatus()
         );
     }
 
@@ -62,14 +76,15 @@ public class TripServiceImpl implements TripService {
                 tripDto.getDriverName(),
                 tripDto.getUser().getId(),
                 tripDto.getCar(),
-                tripDto.getPrice());
+                tripDto.getPrice(),
+                tripDto.getStatus());
     }
 
     @Override
     public List<TripEntity> filterTrip(TripFilterDto filter) {
         CityEntity departure = cityRepository.findById(filter.getDepartureLocationId()).orElse(null);
         CityEntity destination = cityRepository.findById(filter.getDestinationLocationId()).orElse(null);
-        return tripRepository.findAllByFilter(departure, destination, filter.getSeats()).stream().toList();
+        return tripRepository.findAllByFilter(departure, destination, filter.getSeats(), filter.getStatus());
     }
 
     private UserDto userToDto(Long id) {

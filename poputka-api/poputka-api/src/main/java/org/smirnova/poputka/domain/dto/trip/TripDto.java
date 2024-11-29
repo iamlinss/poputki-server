@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.smirnova.poputka.domain.dto.CarDto;
 import org.smirnova.poputka.domain.dto.UserDto;
 import org.smirnova.poputka.domain.entities.CityEntity;
+import org.smirnova.poputka.domain.enums.TripStatus;
 
 import java.time.LocalDateTime;
 
@@ -38,4 +39,6 @@ public class TripDto {
     private String driverName;
 
     private int price;
+
+    private TripStatus status = TripStatus.CREATED;
 }

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.smirnova.poputka.domain.enums.TripStatus;
 
 import java.time.LocalDateTime;
 
@@ -34,4 +35,6 @@ public class TripRqDto {
     private String driverName;
 
     private int price;
+
+    private TripStatus status = TripStatus.CREATED;
 }

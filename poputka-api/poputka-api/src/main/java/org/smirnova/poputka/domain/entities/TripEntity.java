@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.smirnova.poputka.domain.enums.TripStatus;
 
 import java.time.LocalDateTime;
 
@@ -45,4 +46,7 @@ public class TripEntity {
     private CarEntity car;
 
     private int price;
+
+    @Enumerated(EnumType.STRING)
+    private TripStatus status = TripStatus.CREATED;
 }

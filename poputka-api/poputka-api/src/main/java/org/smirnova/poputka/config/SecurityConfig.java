@@ -66,7 +66,7 @@ public class SecurityConfig {
                 }))
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/api/util/**").permitAll();
-                    auth.requestMatchers("/api/trips/filter").permitAll();
+                    auth.requestMatchers("/api/trips/**").permitAll();
                     auth.requestMatchers("/api/data/**").permitAll();
                     auth.requestMatchers("/api/cities/**").permitAll();
                     auth.requestMatchers("/api/statuses/**").permitAll();
