@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.smirnova.poputka.domain.entities.StatusEntity;
 
 import java.time.LocalDateTime;
 
@@ -26,9 +25,6 @@ public class TripRqDto {
     private String description;
 
     private int seats;
-
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private StatusEntity status;
 
     private Long userId;
 

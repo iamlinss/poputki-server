@@ -38,10 +38,6 @@ public class TripEntity {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn
-    private StatusEntity status;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn
     private UserEntity user;
 
     @ManyToOne(fetch = FetchType.EAGER)

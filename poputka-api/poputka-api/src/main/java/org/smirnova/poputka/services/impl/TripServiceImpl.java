@@ -10,10 +10,8 @@ import org.smirnova.poputka.domain.dto.UserDto;
 import org.smirnova.poputka.domain.entities.*;
 import org.smirnova.poputka.mappers.Mapper;
 import org.smirnova.poputka.repositories.CityRepository;
-import org.smirnova.poputka.repositories.StatusRepository;
 import org.smirnova.poputka.repositories.TripRepository;
 import org.smirnova.poputka.services.CarService;
-import org.smirnova.poputka.services.StatusService;
 import org.smirnova.poputka.services.TripService;
 import org.smirnova.poputka.services.UserService;
 import org.springframework.stereotype.Service;
@@ -31,8 +29,6 @@ public class TripServiceImpl implements TripService {
     private final Mapper<UserEntity, UserDto> userMapper;
     private final CarService carService;
     private final Mapper<CarEntity, CarDto> carMapper;
-    private final StatusService statusService;
-    private final StatusRepository statusRepository;
 
     @Override
     public TripEntity save(TripEntity carEntity) {
@@ -48,7 +44,6 @@ public class TripServiceImpl implements TripService {
                 tripRqDto.getDepartureDateTime(),
                 tripRqDto.getDescription(),
                 tripRqDto.getSeats(),
-                statusService.getCreatedStatus(),
                 user,
                 carToDto(tripRqDto.getCarId()),
                 user.getFirstName() + " " + user.getLastName(),
@@ -64,7 +59,6 @@ public class TripServiceImpl implements TripService {
                 tripDto.getDepartureDateTime(),
                 tripDto.getDescription(),
                 tripDto.getSeats(),
-                tripDto.getStatus(),
                 tripDto.getDriverName(),
                 tripDto.getUser().getId(),
                 tripDto.getCar(),
@@ -75,8 +69,7 @@ public class TripServiceImpl implements TripService {
     public List<TripEntity> filterTrip(TripFilterDto filter) {
         CityEntity departure = cityRepository.findById(filter.getDepartureLocationId()).orElse(null);
         CityEntity destination = cityRepository.findById(filter.getDestinationLocationId()).orElse(null);
-        StatusEntity status = statusRepository.findById(filter.getStatusId()).orElse(null);
-        return tripRepository.findAllByFilter(departure, destination, filter.getSeats(), status).stream().toList();
+        return tripRepository.findAllByFilter(departure, destination, filter.getSeats()).stream().toList();
     }
 
     private UserDto userToDto(Long id) {

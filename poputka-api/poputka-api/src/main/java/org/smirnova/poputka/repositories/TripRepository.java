@@ -1,7 +1,6 @@
 package org.smirnova.poputka.repositories;
 
 import org.smirnova.poputka.domain.entities.CityEntity;
-import org.smirnova.poputka.domain.entities.StatusEntity;
 import org.smirnova.poputka.domain.entities.TripEntity;
 import org.smirnova.poputka.domain.entities.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,12 +16,10 @@ public interface TripRepository extends JpaRepository<TripEntity, Long> {
     @Query(value = "SELECT T FROM TripEntity T WHERE" +
             " (:departure IS NULL OR T.departureLocation=:departure) AND" +
             " (:destination IS NULL OR T.destinationLocation = :destination) AND" +
-            " (:seats = 0 OR T.seats<=:seats) AND" +
-            " (:status IS NULL OR T.status = :status)")
+            " (:seats = 0 OR T.seats<=:seats)")
     List<TripEntity> findAllByFilter(@Param("departure") CityEntity departure,
                                      @Param("destination") CityEntity destination,
-                                     @Param("seats") int seats,
-                                     @Param("status") StatusEntity status);
+                                     @Param("seats") int seats);
 
     List<TripEntity> findAllByUser(UserEntity user);
 }

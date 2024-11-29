@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import org.smirnova.poputka.domain.dto.CarDto;
 import org.smirnova.poputka.domain.dto.UserDto;
 import org.smirnova.poputka.domain.entities.CityEntity;
-import org.smirnova.poputka.domain.entities.StatusEntity;
 
 import java.time.LocalDateTime;
 
@@ -30,9 +29,6 @@ public class TripDto {
     private String description;
 
     private int seats;
-
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private StatusEntity status;
 
     private UserDto user;
 

@@ -24,8 +24,4 @@ public class PassengerEntity {
     private Long userId;
 
     private int seats;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn
-    private StatusEntity status;
 }

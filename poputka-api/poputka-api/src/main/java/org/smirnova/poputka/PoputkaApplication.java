@@ -13,9 +13,4 @@ public class PoputkaApplication {
     public static void main(String[] args) {
         SpringApplication.run(PoputkaApplication.class, args);
     }
-//TODO: сущность с попутчиками и поездками id-id
-//TODO: бронирование
-//TODO: отмена бронирования
-//TODO: отмена поездки(статус менять)
-//TODO: отмена поездки(статус менять)
 }
