@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.smirnova.poputka.domain.enums.PassengerStatus;
 
 @Data
 @AllArgsConstructor
@@ -24,4 +25,7 @@ public class PassengerEntity {
     private Long userId;
 
     private int seats;
+
+    @Enumerated(EnumType.STRING)
+    private PassengerStatus status = PassengerStatus.PENDING_CONFIRMATION;
 }

@@ -14,6 +14,7 @@ import org.smirnova.poputka.domain.dto.trip.TripRsDto;
 import org.smirnova.poputka.domain.dto.trip.TripDto;
 import org.smirnova.poputka.domain.entities.PassengerEntity;
 import org.smirnova.poputka.domain.entities.TripEntity;
+import org.smirnova.poputka.domain.enums.PassengerStatus;
 import org.smirnova.poputka.domain.enums.TripStatus;
 import org.smirnova.poputka.mappers.Mapper;
 import org.smirnova.poputka.mappers.impl.UserMapperImpl;
@@ -44,6 +45,7 @@ public class TripController {
     private final UserMapperImpl userMapperImpl;
     private final TripRepository tripRepository;
     private final PassengerRepository passengerRepository;
+    //TODO Перенести репозитории в сервисный слой
 
     @Operation(
             description = "Создание поездки (id не нужно передавать, так на всякий оставил)",
@@ -237,5 +239,45 @@ public class TripController {
                 .map(tripService::dtoToInfoDao)
                 .toList();
         return new ResponseEntity<>(tripRsDtoList, HttpStatus.OK);
+    }
+
+    @Operation(
+            description = "Изменение статуса брони пассажира по ID",
+            summary = "Изменить статус брони пассажира",
+            responses = {
+                    @ApiResponse(description = "Успешно", responseCode = "200"),
+                    @ApiResponse(description = "Не найдено", responseCode = "404"),
+                    @ApiResponse(description = "Некорректный запрос", responseCode = "400")
+            }
+    )
+    @PutMapping("/{id}/passenger-status")
+    public ResponseEntity<Void> updatePassengerStatus(@PathVariable Long id, @RequestParam PassengerStatus status) {
+        log.info("CALL: Update passenger status. ID: {}, Status: {}", id, status);
+        try {
+            tripService.updatePassengerStatus(id, status);
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    @Operation(
+            description = "Получить все брони по tripId",
+            summary = "Возвращает список пассажиров, забронировавших поездку по ID tripId",
+            responses = {
+                    @ApiResponse(description = "Успешно", responseCode = "200"),
+                    @ApiResponse(description = "Не найдено", responseCode = "404")
+            }
+    )
+    @GetMapping("/{tripId}/passengers")
+    public ResponseEntity<List<PassengerEntity>> getPassengersByTripId(@PathVariable Long tripId) {
+        log.info("CALL: Get passengers by trip ID: {}", tripId);
+        List<PassengerEntity> passengers = tripService.findPassengersByTripId(tripId);
+        if (passengers.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(passengers);
     }
 }

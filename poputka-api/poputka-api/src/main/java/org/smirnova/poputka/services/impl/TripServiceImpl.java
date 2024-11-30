@@ -9,9 +9,11 @@ import org.smirnova.poputka.domain.dto.CarDto;
 import org.smirnova.poputka.domain.dto.trip.TripDto;
 import org.smirnova.poputka.domain.dto.UserDto;
 import org.smirnova.poputka.domain.entities.*;
+import org.smirnova.poputka.domain.enums.PassengerStatus;
 import org.smirnova.poputka.domain.enums.TripStatus;
 import org.smirnova.poputka.mappers.Mapper;
 import org.smirnova.poputka.repositories.CityRepository;
+import org.smirnova.poputka.repositories.PassengerRepository;
 import org.smirnova.poputka.repositories.TripRepository;
 import org.smirnova.poputka.services.CarService;
 import org.smirnova.poputka.services.TripService;
@@ -31,6 +33,7 @@ public class TripServiceImpl implements TripService {
     private final Mapper<UserEntity, UserDto> userMapper;
     private final CarService carService;
     private final Mapper<CarEntity, CarDto> carMapper;
+    private final PassengerRepository passengerRepository;
 
     @Override
     public TripEntity save(TripEntity carEntity) {
@@ -111,5 +114,16 @@ public class TripServiceImpl implements TripService {
     @Override
     public List<TripEntity> findUserCreatedTrips(Long userId) {
         return tripRepository.findAllByUser(userIdToEntity(userId)).stream().toList();
+    }
+
+    public void updatePassengerStatus(Long id, PassengerStatus status) {
+        PassengerEntity passenger = passengerRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Passenger not found with ID: " + id));
+        passenger.setStatus(status);
+        passengerRepository.save(passenger);
+    }
+
+    public List<PassengerEntity> findPassengersByTripId(Long tripId) {
+        return passengerRepository.findAllByTripId(tripId);
     }
 }
