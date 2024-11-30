@@ -52,8 +52,16 @@ public class UtilController {
             }
     )
     @PostMapping(path = "/register")
-    public ResponseEntity<UserDto> createUser(@RequestBody UserDto user) {
+    public ResponseEntity<Object> createUser(@RequestBody UserDto user) {
         log.info("CALL: Create user: {}", user);
+
+        if (!(user.getEmail() != null && user.getEmail().matches("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$"))) {
+            return ResponseEntity.badRequest().body("Invalid email format");
+        }
+
+        if (userService.isEmailExists(user.getEmail())) {
+            return ResponseEntity.badRequest().body("Email already exists");
+        }
 
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
         UserEntity userEntity = userMapper.mapFrom(user);
