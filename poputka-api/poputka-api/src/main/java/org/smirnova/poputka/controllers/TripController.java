@@ -8,10 +8,10 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.smirnova.poputka.domain.dto.trip.TripRqDto;
-import org.smirnova.poputka.domain.dto.trip.TripFilterDto;
-import org.smirnova.poputka.domain.dto.trip.TripRsDto;
-import org.smirnova.poputka.domain.dto.trip.TripDto;
+import org.smirnova.poputka.domain.dto.CarDto;
+import org.smirnova.poputka.domain.dto.CityDto;
+import org.smirnova.poputka.domain.dto.PassengerWithTripDto;
+import org.smirnova.poputka.domain.dto.trip.*;
 import org.smirnova.poputka.domain.entities.PassengerEntity;
 import org.smirnova.poputka.domain.entities.TripEntity;
 import org.smirnova.poputka.domain.enums.PassengerStatus;
@@ -28,8 +28,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Tag(name = "Trip endpoints", description = "Работа с поездками")
 @RestController
@@ -220,25 +220,64 @@ public class TripController {
     )
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping(path = "brone/{id}")
-    public ResponseEntity<List<TripRsDto>> getUserBronedTrips(@PathVariable Long id) {
+    public ResponseEntity<List<PassengerWithTripDto>> getUserBronedTrips(@PathVariable Long id) {
         log.info("CALL: Get user broned trips by user ID {}", id);
 
         List<PassengerEntity> passengers = passengerRepository.findAllByUserId(id);
-        List<TripEntity> tripEntityList = new ArrayList<>();
-        for (PassengerEntity passenger : passengers) {
-            TripEntity trip = tripRepository.findById(passenger.getTripId()).orElse(null);
-            if (trip != null) {
-                trip.setSeats(passenger.getSeats());
-                tripEntityList.add(trip);
-            }
-        }
-        List<TripDto> tripDtoList = tripEntityList.stream()
-                .map(tripMapper::mapTo)
-                .toList();
-        List<TripRsDto> tripRsDtoList = tripDtoList.stream()
-                .map(tripService::dtoToInfoDao)
-                .toList();
-        return new ResponseEntity<>(tripRsDtoList, HttpStatus.OK);
+
+        List<PassengerWithTripDto> result = passengers.stream()
+                .map(passenger -> {
+                    TripEntity tripEntity = tripRepository.findById(passenger.getTripId())
+                            .orElseThrow(() -> new EntityNotFoundException("Trip not found for ID: " + passenger.getTripId()));
+
+                    // Преобразуем сущности городов в DTO
+                    CityDto departureLocation = tripEntity.getDepartureLocation() != null
+                            ? CityDto.builder()
+                            .city(tripEntity.getDepartureLocation().getCity())
+                            .country(tripEntity.getDepartureLocation().getCountry())
+                            .build()
+                            : null;
+
+                    CityDto destinationLocation = tripEntity.getDestinationLocation() != null
+                            ? CityDto.builder()
+                            .city(tripEntity.getDestinationLocation().getCity())
+                            .country(tripEntity.getDestinationLocation().getCountry())
+                            .build()
+                            : null;
+
+                    // Преобразуем автомобиль в DTO
+                    CarDto carDto = tripEntity.getCar() != null
+                            ? CarDto.builder()
+                            .brand(tripEntity.getCar().getBrand())
+                            .model(tripEntity.getCar().getModel())
+                            .color(tripEntity.getCar().getColor())
+                            .plateNumber(tripEntity.getCar().getPlateNumber())
+                            .maxSeats(tripEntity.getCar().getMaxSeats())
+                            .build()
+                            : null;
+
+                    // Формируем TripDetails
+                    TripDetails tripDetails = TripDetails.builder()
+                            .departureDateTime(tripEntity.getDepartureDateTime())
+                            .seats(tripEntity.getSeats())
+                            .driverName(tripEntity.getDriverName())
+                            .price(tripEntity.getPrice())
+                            .status(tripEntity.getStatus())
+                            .departureLocation(departureLocation)
+                            .destinationLocation(destinationLocation)
+                            .car(carDto)
+                            .build();
+
+                    return PassengerWithTripDto.builder()
+                            .id(passenger.getId())
+                            .tripDetails(tripDetails)
+                            .passengerSeats(passenger.getSeats())
+                            .passengerStatus(passenger.getStatus())
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @Operation(
