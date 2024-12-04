@@ -28,4 +28,18 @@ public class PassengerEntity {
 
     @Enumerated(EnumType.STRING)
     private PassengerStatus status = PassengerStatus.PENDING_CONFIRMATION;
+
+    // Оценка водителя пользователем
+    private Integer driverRating;
+
+    // Оценка пользователя водителем
+    private Integer passengerRating;
+
+    // Комментарий водителю от пользователя
+    @Column(length = 1000)
+    private String driverComment;
+
+    // Комментарий пользователю от водителя
+    @Column(length = 1000)
+    private String passengerComment;
 }

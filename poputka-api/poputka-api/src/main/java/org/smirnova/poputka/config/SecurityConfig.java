@@ -71,6 +71,7 @@ public class SecurityConfig {
                     auth.requestMatchers("/api/cities/**").permitAll();
                     auth.requestMatchers("/api/statuses/**").permitAll();
                     auth.requestMatchers("/error/**").permitAll();
+                    auth.requestMatchers("/api/reviews/**").permitAll();
                     auth.requestMatchers("/v2/api-docs",
                             "/v3/api-docs",
                             "/v3/api-docs/**",
