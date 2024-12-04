@@ -34,6 +34,7 @@ public class TripServiceImpl implements TripService {
     private final CarService carService;
     private final Mapper<CarEntity, CarDto> carMapper;
     private final PassengerRepository passengerRepository;
+    private final EmailServiceImpl emailService;
 
     @Override
     public TripEntity save(TripEntity carEntity) {
@@ -41,15 +42,31 @@ public class TripServiceImpl implements TripService {
     }
 
     @Override
-    public void updateStatus(Long id, TripStatus status) {
+    public void updateStatus(Long id, TripStatus newStatus) {
         TripEntity trip = tripRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Trip not found with ID: " + id));
-        if (trip.getStatus() == TripStatus.CANCELLED) {
+        TripStatus oldStatus = trip.getStatus();
+
+        if (oldStatus == TripStatus.CANCELLED) {
             throw new IllegalArgumentException("Cannot update status of a cancelled trip.");
         }
-        trip.setStatus(status);
+
+        trip.setStatus(newStatus);
         tripRepository.save(trip);
+
+        // Отправка письма пользователю
+        UserEntity user = trip.getUser();
+        if (user != null && user.getEmail() != null) {
+            String subject = "Status Update for Your Trip";
+            String body = String.format(
+                    "Dear %s %s,\n\nThe status of your trip has been updated from %s to %s.\n\nBest regards,\nYour Service Team",
+                    user.getFirstName(), user.getLastName(), oldStatus.name(), newStatus.name()
+            );
+
+            emailService.sendMessage(user.getEmail(), subject, body);
+        }
     }
+
 
     @Override
     public TripDto daoToDto(TripRqDto tripRqDto) {
@@ -116,11 +133,25 @@ public class TripServiceImpl implements TripService {
         return tripRepository.findAllByUser(userIdToEntity(userId)).stream().toList();
     }
 
-    public void updatePassengerStatus(Long id, PassengerStatus status) {
+    public void updatePassengerStatus(Long id, PassengerStatus newStatus) {
         PassengerEntity passenger = passengerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Passenger not found with ID: " + id));
-        passenger.setStatus(status);
+        PassengerStatus oldStatus = passenger.getStatus();
+
+        passenger.setStatus(newStatus);
         passengerRepository.save(passenger);
+
+        // Отправка письма пассажиру
+        UserEntity user = userService.findOne(passenger.getUserId()).orElseThrow();
+        if (user.getEmail() != null) {
+            String subject = "Booking Status Update";
+            String body = String.format(
+                    "Dear %s %s,\n\nThe status of your booking has been updated from %s to %s.\n\nBest regards,\nYour Service Team",
+                    user.getFirstName(), user.getLastName(), oldStatus.name(), newStatus.name()
+            );
+
+            emailService.sendMessage(user.getEmail(), subject, body);
+        }
     }
 
     public List<PassengerEntity> findPassengersByTripId(Long tripId) {
