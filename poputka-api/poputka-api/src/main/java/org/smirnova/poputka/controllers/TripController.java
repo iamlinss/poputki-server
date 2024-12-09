@@ -14,6 +14,7 @@ import org.smirnova.poputka.domain.dto.PassengerWithTripDto;
 import org.smirnova.poputka.domain.dto.trip.*;
 import org.smirnova.poputka.domain.entities.PassengerEntity;
 import org.smirnova.poputka.domain.entities.TripEntity;
+import org.smirnova.poputka.domain.entities.UserEntity;
 import org.smirnova.poputka.domain.enums.PassengerStatus;
 import org.smirnova.poputka.domain.enums.TripStatus;
 import org.smirnova.poputka.mappers.Mapper;
@@ -24,10 +25,12 @@ import org.smirnova.poputka.repositories.UserRepository;
 import org.smirnova.poputka.services.TripService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smirnova.poputka.services.impl.EmailServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,6 +44,7 @@ public class TripController {
 
     private final Mapper<TripEntity, TripDto> tripMapper;
     private final TripService tripService;
+    private final EmailServiceImpl emailService;
     private final UserRepository userRepository;
     private final UserMapperImpl userMapperImpl;
     private final TripRepository tripRepository;
@@ -197,6 +201,48 @@ public class TripController {
             tripEntity.setSeats(tripEntity.getSeats() - passengerEntity.getSeats());
             TripEntity savedTripEntity = tripService.save(tripEntity);
             passengerRepository.save(passengerEntity);
+
+            //TODO Вынести в сервисный слой
+            // Получаем данные о пассажире
+            UserEntity passenger = userRepository.findById(passengerEntity.getUserId()).orElse(null);
+            if (passenger == null) {
+                log.warn("Passenger with ID {} not found", passengerEntity.getUserId());
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+
+            // Отправляем уведомление водителю
+            UserEntity driver = tripEntity.getUser();
+            if (driver != null && driver.getEmail() != null) {
+                String subject = "Новая бронь на вашу поездку";
+                String body = String.format(
+                        """
+                                Здравствуйте, %s!
+
+                                У вас новая бронь на поездку:
+
+                                Отправление: %s
+                                Назначение: %s
+                                Дата и время: %s
+                                Количество мест: %d
+
+                                Детали о пассажире:
+                                Имя: %s %s
+                                Email: %s
+
+                                Пожалуйста, проверьте детали в приложении.""",
+                        driver.getFirstName(),
+                        tripEntity.getDepartureLocation().getCity(),
+                        tripEntity.getDestinationLocation().getCity(),
+                        tripEntity.getDepartureDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
+                        passengerEntity.getSeats(),
+                        passenger.getFirstName(),
+                        passenger.getLastName(),
+                        passenger.getEmail()
+                );
+
+                emailService.sendMessage(driver.getEmail(), subject, body);
+            }
+
             return new ResponseEntity<>(tripService.dtoToInfoDao(tripMapper.mapTo(savedTripEntity)), HttpStatus.CREATED);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
