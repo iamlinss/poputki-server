@@ -84,11 +84,9 @@ public class UserController {
     public ResponseEntity<UserDto> getUser(@PathVariable Long id) {
         log.info("CALL: Get user with ID {}", id);
 
-        Optional<UserEntity> foundUser = userService.findOne(id);
-        return foundUser.map(userEntity -> {
-            UserDto userDto = userMapper.mapTo(userEntity);
-            return new ResponseEntity<>(userDto, HttpStatus.OK);
-        }).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        Optional<UserDto> userDto = userService.getUserWithRatingsAndComments(id);
+        return userDto.map(dto -> new ResponseEntity<>(dto, HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @Operation(

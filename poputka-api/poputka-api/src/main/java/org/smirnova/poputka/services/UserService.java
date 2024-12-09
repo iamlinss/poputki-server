@@ -1,5 +1,6 @@
 package org.smirnova.poputka.services;
 
+import org.smirnova.poputka.domain.dto.UserDto;
 import org.smirnova.poputka.domain.entities.UserEntity;
 import org.springframework.stereotype.Service;
 
@@ -18,4 +19,6 @@ public interface UserService {
     boolean isExists(Long id);
 
     boolean isEmailExists(String email);
+
+    Optional<UserDto> getUserWithRatingsAndComments(Long id);
 }

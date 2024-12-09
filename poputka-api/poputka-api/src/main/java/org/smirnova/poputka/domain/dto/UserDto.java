@@ -49,4 +49,7 @@ public class UserDto {
     private List<CarDto> cars;
 
     private UserRole role;
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private List<ReviewDto> reviews;
 }
