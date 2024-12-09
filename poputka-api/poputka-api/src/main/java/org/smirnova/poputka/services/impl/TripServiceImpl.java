@@ -48,7 +48,7 @@ public class TripServiceImpl implements TripService {
         TripStatus oldStatus = trip.getStatus();
 
         if (oldStatus == TripStatus.CANCELLED) {
-            throw new IllegalArgumentException("Cannot update status of a cancelled trip.");
+            throw new IllegalArgumentException("Невозможно обновить статус отменённой поездки.");
         }
 
         trip.setStatus(newStatus);
@@ -57,10 +57,10 @@ public class TripServiceImpl implements TripService {
         // Отправка письма пользователю
         UserEntity user = trip.getUser();
         if (user != null && user.getEmail() != null) {
-            String subject = "Status Update for Your Trip";
+            String subject = "Обновление статуса вашей поездки";
             String body = String.format(
-                    "Dear %s %s,\n\nThe status of your trip has been updated from %s to %s.\n\nBest regards,\nYour Service Team",
-                    user.getFirstName(), user.getLastName(), oldStatus.name(), newStatus.name()
+                    "Уважаемый(ая) %s %s,\n\nСтатус вашей поездки был изменён с \"%s\" на \"%s\".\n\nС уважением,\nКоманда сервиса",
+                    user.getFirstName(), user.getLastName(), oldStatus.getDescription(), newStatus.getDescription()
             );
 
             emailService.sendMessage(user.getEmail(), subject, body);
@@ -142,12 +142,13 @@ public class TripServiceImpl implements TripService {
         passengerRepository.save(passenger);
 
         // Отправка письма пассажиру
-        UserEntity user = userService.findOne(passenger.getUserId()).orElseThrow();
+        UserEntity user = userService.findOne(passenger.getUserId())
+                .orElseThrow(() -> new EntityNotFoundException("Пользователь, связанный с пассажиром, не найден."));
         if (user.getEmail() != null) {
-            String subject = "Booking Status Update";
+            String subject = "Обновление статуса бронирования";
             String body = String.format(
-                    "Dear %s %s,\n\nThe status of your booking has been updated from %s to %s.\n\nBest regards,\nYour Service Team",
-                    user.getFirstName(), user.getLastName(), oldStatus.name(), newStatus.name()
+                    "Уважаемый(ая) %s %s,\n\nСтатус вашего бронирования был изменён с \"%s\" на \"%s\".\n\nС уважением,\nКоманда сервиса",
+                    user.getFirstName(), user.getLastName(), oldStatus.getDescription(), newStatus.getDescription()
             );
 
             emailService.sendMessage(user.getEmail(), subject, body);
