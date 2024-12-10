@@ -1,12 +1,17 @@
 package org.smirnova.poputka.services.impl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 @Service
 public class EmailServiceImpl {
+
+    private static final Logger logger = LoggerFactory.getLogger(EmailServiceImpl.class);
 
     private final JavaMailSender mailSender;
 
@@ -24,7 +29,11 @@ public class EmailServiceImpl {
         message.setSubject(subject);
         message.setText(body);
 
-        mailSender.send(message);
+        try {
+            mailSender.send(message);
+            logger.info("Email successfully sent to {}", toEmail);
+        } catch (MailException e) {
+            logger.error("Failed to send email to {}: {}", toEmail, e.getMessage(), e);
+        }
     }
 }
-
