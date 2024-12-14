@@ -12,7 +12,6 @@ import org.smirnova.poputka.repositories.UserRepository;
 import org.smirnova.poputka.services.impl.CarServiceImpl;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;

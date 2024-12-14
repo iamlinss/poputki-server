@@ -70,7 +70,8 @@ public class UserServiceImpl implements UserService {
         return Optional.of(userDto);
     }
 
-    private void populateDriverData(UserEntity driver, UserDto userDto) {
+    @Override
+    public void populateDriverData(UserEntity driver, UserDto userDto) {
         List<PassengerEntity> passengerReviews = passengerRepository.findAllByTripUser(driver.getId());
 
         double driverRating = passengerReviews.stream()
@@ -90,7 +91,8 @@ public class UserServiceImpl implements UserService {
         userDto.setReviews(driverReviews);
     }
 
-    private void populatePassengerData(UserEntity passenger, UserDto userDto) {
+    @Override
+    public void populatePassengerData(UserEntity passenger, UserDto userDto) {
         List<PassengerEntity> userTrips = passengerRepository.findAllByUserId(passenger.getId());
 
         double passengerRating = userTrips.stream()

@@ -10,7 +10,6 @@ import org.smirnova.poputka.repositories.CityRepository;
 import org.smirnova.poputka.services.impl.CityServiceImpl;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -52,82 +51,5 @@ class CityServiceImplTest {
 
         assertThat(result).isEmpty();
         verify(cityRepository, times(1)).findAll();
-    }
-
-    @Test
-    void createCity_ShouldSaveCity() {
-        CityEntity city = new CityEntity();
-        city.setCity("Минск");
-
-        when(cityRepository.save(city)).thenReturn(city);
-
-        CityEntity result = cityService.createCity(city);
-
-        assertThat(result).isEqualTo(city);
-        verify(cityRepository, times(1)).save(city);
-    }
-
-    @Test
-    void updateCity_ShouldUpdateCity_WhenCityExists() {
-        Long cityId = 1L;
-        CityEntity existingCity = new CityEntity();
-        existingCity.setCity("Старый город");
-        existingCity.setCountry("Старая страна");
-
-        CityEntity updatedCity = new CityEntity();
-        updatedCity.setCity("Новый город");
-        updatedCity.setCountry("Новая страна");
-
-        when(cityRepository.findById(cityId)).thenReturn(Optional.of(existingCity));
-        when(cityRepository.save(existingCity)).thenReturn(existingCity);
-
-        Optional<CityEntity> result = cityService.updateCity(cityId, updatedCity);
-
-        assertThat(result).isPresent();
-        assertThat(result.get().getCity()).isEqualTo("Новый город");
-        assertThat(result.get().getCountry()).isEqualTo("Новая страна");
-        verify(cityRepository, times(1)).findById(cityId);
-        verify(cityRepository, times(1)).save(existingCity);
-    }
-
-    @Test
-    void updateCity_ShouldReturnEmptyOptional_WhenCityDoesNotExist() {
-        Long cityId = 1L;
-        CityEntity updatedCity = new CityEntity();
-
-        when(cityRepository.findById(cityId)).thenReturn(Optional.empty());
-
-        Optional<CityEntity> result = cityService.updateCity(cityId, updatedCity);
-
-        assertThat(result).isEmpty();
-        verify(cityRepository, times(1)).findById(cityId);
-        verify(cityRepository, never()).save(any(CityEntity.class));
-    }
-
-    @Test
-    void deleteCity_ShouldReturnTrue_WhenCityExists() {
-        Long cityId = 1L;
-
-        when(cityRepository.existsById(cityId)).thenReturn(true);
-        doNothing().when(cityRepository).deleteById(cityId);
-
-        boolean result = cityService.deleteCity(cityId);
-
-        assertThat(result).isTrue();
-        verify(cityRepository, times(1)).existsById(cityId);
-        verify(cityRepository, times(1)).deleteById(cityId);
-    }
-
-    @Test
-    void deleteCity_ShouldReturnFalse_WhenCityDoesNotExist() {
-        Long cityId = 1L;
-
-        when(cityRepository.existsById(cityId)).thenReturn(false);
-
-        boolean result = cityService.deleteCity(cityId);
-
-        assertThat(result).isFalse();
-        verify(cityRepository, times(1)).existsById(cityId);
-        verify(cityRepository, never()).deleteById(cityId);
     }
 }

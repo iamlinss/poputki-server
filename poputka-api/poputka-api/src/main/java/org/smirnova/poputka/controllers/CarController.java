@@ -30,8 +30,9 @@ public class CarController {
 
     private static final Logger log = LoggerFactory.getLogger(CarController.class);
 
-    private final UserService userService;
     private final Mapper<CarEntity, CarDto> carMapper;
+
+    private final UserService userService;
     private final CarService carService;
 
     @Operation(

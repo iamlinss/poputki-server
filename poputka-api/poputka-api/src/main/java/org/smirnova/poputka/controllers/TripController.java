@@ -12,24 +12,19 @@ import org.smirnova.poputka.domain.dto.*;
 import org.smirnova.poputka.domain.dto.trip.*;
 import org.smirnova.poputka.domain.entities.PassengerEntity;
 import org.smirnova.poputka.domain.entities.TripEntity;
-import org.smirnova.poputka.domain.entities.UserEntity;
 import org.smirnova.poputka.domain.enums.PassengerStatus;
 import org.smirnova.poputka.domain.enums.TripStatus;
 import org.smirnova.poputka.mappers.Mapper;
 import org.smirnova.poputka.mappers.impl.UserMapperImpl;
-import org.smirnova.poputka.repositories.PassengerRepository;
-import org.smirnova.poputka.repositories.TripRepository;
-import org.smirnova.poputka.repositories.UserRepository;
+import org.smirnova.poputka.services.PassengerService;
 import org.smirnova.poputka.services.TripService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smirnova.poputka.services.UserService;
-import org.smirnova.poputka.services.impl.EmailServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,14 +37,10 @@ public class TripController {
     private static final Logger log = LoggerFactory.getLogger(TripController.class);
 
     private final Mapper<TripEntity, TripDto> tripMapper;
-    private final TripService tripService;
-    private final EmailServiceImpl emailService;
-    private final UserRepository userRepository;
     private final UserService userService;
+    private final TripService tripService;
+    private final PassengerService passengerService;
     private final UserMapperImpl userMapperImpl;
-    private final TripRepository tripRepository;
-    private final PassengerRepository passengerRepository;
-    //TODO Перенести репозитории в сервисный слой
 
     @Operation(
             description = "Создание поездки (id не нужно передавать, так на всякий оставил)",
@@ -88,7 +79,7 @@ public class TripController {
         TripEntity tripEntity = tripMapper.mapFrom(tripDto);
 
         TripEntity savedTripEntity = tripService.save(tripEntity);
-        userRepository.save(userMapperImpl.mapFrom(tripDto.getUser()));
+        userService.save(userMapperImpl.mapFrom(tripDto.getUser()));
 
         return new ResponseEntity<>(tripService.dtoToInfoDao(tripMapper.mapTo(savedTripEntity)), HttpStatus.CREATED);
     }
@@ -196,58 +187,23 @@ public class TripController {
     @PostMapping(path = "/brone")
     public ResponseEntity<TripRsDto> broneTrip(@RequestBody PassengerEntity passengerEntity) {
         log.info("CALL: Brone trip: {}", passengerEntity);
-        TripEntity tripEntity = tripRepository.findById(passengerEntity.getTripId()).orElse(null);
-        if (tripEntity != null) {
-            tripEntity.setSeats(tripEntity.getSeats() - passengerEntity.getSeats());
-            TripEntity savedTripEntity = tripService.save(tripEntity);
-            passengerRepository.save(passengerEntity);
 
-            //TODO Вынести в сервисный слой
-            // Получаем данные о пассажире
-            UserEntity passenger = userRepository.findById(passengerEntity.getUserId()).orElse(null);
-            if (passenger == null) {
-                log.warn("Passenger with ID {} not found", passengerEntity.getUserId());
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
+        TripEntity tripEntity = tripService.findOne(passengerEntity.getTripId())
+                .orElseThrow(() -> new EntityNotFoundException("Trip not found"));
 
-            // Отправляем уведомление водителю
-            UserEntity driver = tripEntity.getUser();
-            if (driver != null && driver.getEmail() != null) {
-                String subject = "Новая бронь на вашу поездку";
-                String body = String.format(
-                        """
-                                Здравствуйте, %s!
+        // Обновляем количество мест
+        tripEntity.setSeats(tripEntity.getSeats() - passengerEntity.getSeats());
+        TripEntity savedTripEntity = tripService.save(tripEntity);
 
-                                У вас новая бронь на поездку:
+        passengerService.save(passengerEntity);
 
-                                Отправление: %s
-                                Назначение: %s
-                                Дата и время: %s
-                                Количество мест: %d
+        // Отправляем уведомление водителю
+        tripService.sendBookingNotification(tripEntity, passengerEntity);
 
-                                Детали о пассажире:
-                                Имя: %s %s
-                                Email: %s
+        TripRsDto tripRsDto = tripService.convertToTripRsDto(savedTripEntity);
 
-                                Пожалуйста, проверьте детали в приложении.""",
-                        driver.getFirstName(),
-                        tripEntity.getDepartureLocation().getCity(),
-                        tripEntity.getDestinationLocation().getCity(),
-                        tripEntity.getDepartureDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
-                        passengerEntity.getSeats(),
-                        passenger.getFirstName(),
-                        passenger.getLastName(),
-                        passenger.getEmail()
-                );
-
-                emailService.sendMessage(driver.getEmail(), subject, body);
-            }
-
-            return new ResponseEntity<>(tripService.dtoToInfoDao(tripMapper.mapTo(savedTripEntity)), HttpStatus.CREATED);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(tripRsDto, HttpStatus.CREATED);
     }
-
 
     @Operation(
             description = "Получить забронированные поездки пользователя по ID",
@@ -269,59 +225,7 @@ public class TripController {
     public ResponseEntity<List<PassengerWithTripDto>> getUserBronedTrips(@PathVariable Long id) {
         log.info("CALL: Get user broned trips by user ID {}", id);
 
-        List<PassengerEntity> passengers = passengerRepository.findAllByUserId(id);
-
-        List<PassengerWithTripDto> result = passengers.stream()
-                .map(passenger -> {
-                    TripEntity tripEntity = tripRepository.findById(passenger.getTripId())
-                            .orElseThrow(() -> new EntityNotFoundException("Trip not found for ID: " + passenger.getTripId()));
-
-                    // Преобразуем сущности городов в DTO
-                    CityDto departureLocation = tripEntity.getDepartureLocation() != null
-                            ? CityDto.builder()
-                            .city(tripEntity.getDepartureLocation().getCity())
-                            .country(tripEntity.getDepartureLocation().getCountry())
-                            .build()
-                            : null;
-
-                    CityDto destinationLocation = tripEntity.getDestinationLocation() != null
-                            ? CityDto.builder()
-                            .city(tripEntity.getDestinationLocation().getCity())
-                            .country(tripEntity.getDestinationLocation().getCountry())
-                            .build()
-                            : null;
-
-                    // Преобразуем автомобиль в DTO
-                    CarDto carDto = tripEntity.getCar() != null
-                            ? CarDto.builder()
-                            .brand(tripEntity.getCar().getBrand())
-                            .model(tripEntity.getCar().getModel())
-                            .color(tripEntity.getCar().getColor())
-                            .plateNumber(tripEntity.getCar().getPlateNumber())
-                            .maxSeats(tripEntity.getCar().getMaxSeats())
-                            .build()
-                            : null;
-
-                    // Формируем TripDetails
-                    TripDetails tripDetails = TripDetails.builder()
-                            .departureDateTime(tripEntity.getDepartureDateTime())
-                            .seats(tripEntity.getSeats())
-                            .driverName(tripEntity.getDriverName())
-                            .price(tripEntity.getPrice())
-                            .status(tripEntity.getStatus())
-                            .departureLocation(departureLocation)
-                            .destinationLocation(destinationLocation)
-                            .car(carDto)
-                            .build();
-
-                    return PassengerWithTripDto.builder()
-                            .id(passenger.getId())
-                            .tripDetails(tripDetails)
-                            .passengerSeats(passenger.getSeats())
-                            .passengerStatus(passenger.getStatus())
-                            .build();
-                })
-                .collect(Collectors.toList());
+        List<PassengerWithTripDto> result = tripService.getUserBronedTrips(id);
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
@@ -369,11 +273,11 @@ public class TripController {
         }
 
         List<PassengerDTO> passengerDTOs = passengers.stream().map(passenger -> {
-            UserSimpleDto userSimpleDto = userService.getUserSimpleDtoById(passenger.getUserId()); // Получение упрощенного UserDTO
+            UserSimpleDto userSimpleDto = userService.getUserSimpleDtoById(passenger.getUserId());
             return PassengerDTO.builder()
                     .id(passenger.getId())
                     .tripId(passenger.getTripId())
-                    .user(userSimpleDto) // Используем UserSimpleDto вместо UserDto
+                    .user(userSimpleDto)
                     .seats(passenger.getSeats())
                     .status(passenger.getStatus())
                     .driverRating(passenger.getDriverRating())

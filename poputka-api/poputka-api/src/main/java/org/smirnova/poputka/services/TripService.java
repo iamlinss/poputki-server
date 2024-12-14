@@ -1,6 +1,6 @@
 package org.smirnova.poputka.services;
 
-import jakarta.persistence.EntityNotFoundException;
+import org.smirnova.poputka.domain.dto.PassengerWithTripDto;
 import org.smirnova.poputka.domain.dto.trip.TripRqDto;
 import org.smirnova.poputka.domain.dto.trip.TripFilterDto;
 import org.smirnova.poputka.domain.dto.trip.TripRsDto;
@@ -12,11 +12,14 @@ import org.smirnova.poputka.domain.enums.TripStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public interface TripService {
 
     TripEntity save(TripEntity carEntity);
+
+    Optional<TripEntity> findOne(Long id);
 
     void updateStatus(Long id, TripStatus status);
 
@@ -33,4 +36,10 @@ public interface TripService {
     List<PassengerEntity> findPassengersByTripId(Long tripId);
 
     List<PassengerEntity> findPassengersByTripIdAndStatus(Long tripId, PassengerStatus status);
+
+    List<PassengerWithTripDto> getUserBronedTrips(Long userId);
+
+    void sendBookingNotification(TripEntity tripEntity, PassengerEntity passengerEntity);
+
+    TripRsDto convertToTripRsDto(TripEntity tripEntity);
 }

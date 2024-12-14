@@ -24,4 +24,8 @@ public interface UserService {
     Optional<UserDto> getUserWithRatingsAndComments(Long id);
 
     UserSimpleDto getUserSimpleDtoById(Long userId);
+
+    void populateDriverData(UserEntity driver, UserDto userDto);
+
+    void populatePassengerData(UserEntity passenger, UserDto userDto);
 }

@@ -4,12 +4,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.smirnova.poputka.domain.entities.PassengerEntity;
-import org.smirnova.poputka.repositories.PassengerRepository;
+import org.smirnova.poputka.services.ReviewService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import jakarta.persistence.EntityNotFoundException;
 
 @Tag(name = "Reviews", description = "API для управления отзывами между пассажирами и водителями")
 @RestController
@@ -17,7 +14,7 @@ import jakarta.persistence.EntityNotFoundException;
 @RequiredArgsConstructor
 public class ReviewController {
 
-    private final PassengerRepository passengerRepository;
+    private final ReviewService reviewService;
 
     @Operation(
             summary = "Оставить отзыв водителю",
@@ -34,14 +31,8 @@ public class ReviewController {
             @Parameter(description = "Комментарий для водителя", example = "Отличный водитель, приехал вовремя.")
             @RequestParam(required = false) String comment
     ) {
-        PassengerEntity passenger = passengerRepository.findById(passengerId)
-                .orElseThrow(() -> new EntityNotFoundException("Passenger not found"));
-
-        passenger.setDriverRating(rating);
-        passenger.setDriverComment(comment);
-        passengerRepository.save(passenger);
-
-        return ResponseEntity.ok("Review for driver saved successfully.");
+        String response = reviewService.leaveDriverReview(passengerId, rating, comment);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(
@@ -59,13 +50,7 @@ public class ReviewController {
             @Parameter(description = "Комментарий для пассажира", example = "Пассажир опоздал, но был вежлив.")
             @RequestParam(required = false) String comment
     ) {
-        PassengerEntity passenger = passengerRepository.findById(passengerId)
-                .orElseThrow(() -> new EntityNotFoundException("Passenger not found"));
-
-        passenger.setPassengerRating(rating);
-        passenger.setPassengerComment(comment);
-        passengerRepository.save(passenger);
-
-        return ResponseEntity.ok("Review for passenger saved successfully.");
+        String response = reviewService.leavePassengerReview(passengerId, rating, comment);
+        return ResponseEntity.ok(response);
     }
 }

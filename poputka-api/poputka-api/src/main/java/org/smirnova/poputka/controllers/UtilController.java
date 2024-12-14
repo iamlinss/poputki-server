@@ -35,9 +35,9 @@ public class UtilController {
 
     private static final Logger log = LoggerFactory.getLogger(UtilController.class);
 
+    private final AuthService authService;
     private final UserService userService;
     private final Mapper<UserEntity, UserDto> userMapper;
-    private final AuthService authService;
     private final AuthenticationManager authenticationManager;
 
 

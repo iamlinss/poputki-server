@@ -20,7 +20,6 @@ public class CarServiceImpl implements CarService {
     private final CarRepository carRepository;
     private final UserRepository userRepository;
 
-
     @Override
     public CarEntity save(CarEntity carEntity, UserEntity userEntity) {
         CarEntity savedCar = carRepository.save(carEntity);
@@ -50,6 +49,8 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public Optional<Double> calculatePrice(String cityFrom, String cityTo) {
+
+        //TODO Заменить на данные из БД
         Map<String, Double> cityCoefficients = new HashMap<>();
         cityCoefficients.put("Москва", 1.5);
         cityCoefficients.put("Санкт-Петербург", 1.3);
