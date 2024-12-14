@@ -58,6 +58,14 @@ public class TripServiceImpl implements TripService {
             throw new IllegalArgumentException("Невозможно обновить статус отменённой поездки.");
         }
 
+        // Если статус меняется на отменённый, обновляем статус всех связанных пассажиров
+        if (newStatus == TripStatus.CANCELLED) {
+            List<PassengerEntity> passengers = passengerRepository.findByTripId(id);
+            for (PassengerEntity passenger : passengers) {
+                updatePassengerStatus(passenger.getId(), PassengerStatus.CANCELLED_BY_PASSENGER);
+            }
+        }
+
         trip.setStatus(newStatus);
         tripRepository.save(trip);
 
