@@ -31,4 +31,6 @@ public interface TripService {
     void updatePassengerStatus(Long id, PassengerStatus status);
 
     List<PassengerEntity> findPassengersByTripId(Long tripId);
+
+    List<PassengerEntity> findPassengersByTripIdAndStatus(Long tripId, PassengerStatus status);
 }

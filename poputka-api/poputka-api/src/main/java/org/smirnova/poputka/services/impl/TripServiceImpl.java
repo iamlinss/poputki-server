@@ -158,4 +158,13 @@ public class TripServiceImpl implements TripService {
     public List<PassengerEntity> findPassengersByTripId(Long tripId) {
         return passengerRepository.findAllByTripId(tripId);
     }
+
+    @Override
+    public List<PassengerEntity> findPassengersByTripIdAndStatus(Long tripId, PassengerStatus status) {
+        if (status == null) {
+            return passengerRepository.findByTripId(tripId);
+        } else {
+            return passengerRepository.findByTripIdAndStatus(tripId, status);
+        }
+    }
 }

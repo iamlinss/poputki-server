@@ -8,9 +8,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.smirnova.poputka.domain.dto.CarDto;
-import org.smirnova.poputka.domain.dto.CityDto;
-import org.smirnova.poputka.domain.dto.PassengerWithTripDto;
+import org.smirnova.poputka.domain.dto.*;
 import org.smirnova.poputka.domain.dto.trip.*;
 import org.smirnova.poputka.domain.entities.PassengerEntity;
 import org.smirnova.poputka.domain.entities.TripEntity;
@@ -25,6 +23,7 @@ import org.smirnova.poputka.repositories.UserRepository;
 import org.smirnova.poputka.services.TripService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smirnova.poputka.services.UserService;
 import org.smirnova.poputka.services.impl.EmailServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,6 +45,7 @@ public class TripController {
     private final TripService tripService;
     private final EmailServiceImpl emailService;
     private final UserRepository userRepository;
+    private final UserService userService;
     private final UserMapperImpl userMapperImpl;
     private final TripRepository tripRepository;
     private final PassengerRepository passengerRepository;
@@ -349,20 +349,40 @@ public class TripController {
     }
 
     @Operation(
-            description = "Получить все брони по tripId",
-            summary = "Возвращает список пассажиров, забронировавших поездку по ID tripId",
+            description = "Получить все брони по tripId с фильтром по статусу",
+            summary = "Возвращает список пассажиров, забронировавших поездку по ID tripId с возможностью фильтрации по статусу",
             responses = {
                     @ApiResponse(description = "Успешно", responseCode = "200"),
                     @ApiResponse(description = "Не найдено", responseCode = "404")
             }
     )
     @GetMapping("/{tripId}/passengers")
-    public ResponseEntity<List<PassengerEntity>> getPassengersByTripId(@PathVariable Long tripId) {
-        log.info("CALL: Get passengers by trip ID: {}", tripId);
-        List<PassengerEntity> passengers = tripService.findPassengersByTripId(tripId);
+    public ResponseEntity<List<PassengerDTO>> getPassengersByTripId(
+            @PathVariable Long tripId,
+            @RequestParam(required = false) PassengerStatus status) {
+        log.info("CALL: Get passengers by trip ID: {} with status: {}", tripId, status);
+
+        List<PassengerEntity> passengers = tripService.findPassengersByTripIdAndStatus(tripId, status);
+
         if (passengers.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return ResponseEntity.ok(passengers);
+
+        List<PassengerDTO> passengerDTOs = passengers.stream().map(passenger -> {
+            UserSimpleDto userSimpleDto = userService.getUserSimpleDtoById(passenger.getUserId()); // Получение упрощенного UserDTO
+            return PassengerDTO.builder()
+                    .id(passenger.getId())
+                    .tripId(passenger.getTripId())
+                    .user(userSimpleDto) // Используем UserSimpleDto вместо UserDto
+                    .seats(passenger.getSeats())
+                    .status(passenger.getStatus())
+                    .driverRating(passenger.getDriverRating())
+                    .passengerRating(passenger.getPassengerRating())
+                    .driverComment(passenger.getDriverComment())
+                    .passengerComment(passenger.getPassengerComment())
+                    .build();
+        }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(passengerDTOs);
     }
 }

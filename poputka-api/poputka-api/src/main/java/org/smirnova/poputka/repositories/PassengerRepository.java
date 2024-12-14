@@ -1,6 +1,7 @@
 package org.smirnova.poputka.repositories;
 
 import org.smirnova.poputka.domain.entities.PassengerEntity;
+import org.smirnova.poputka.domain.enums.PassengerStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,4 +17,8 @@ public interface PassengerRepository extends JpaRepository<PassengerEntity, Long
 
     @Query("SELECT p FROM PassengerEntity p JOIN TripEntity t ON p.tripId = t.id WHERE t.user.id = :driverId")
     List<PassengerEntity> findAllByTripUser(@Param("driverId") Long driverId);
+
+    List<PassengerEntity> findByTripId(Long tripId);
+
+    List<PassengerEntity> findByTripIdAndStatus(Long tripId, PassengerStatus status);
 }

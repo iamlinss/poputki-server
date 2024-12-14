@@ -1,14 +1,15 @@
 package org.smirnova.poputka.services.impl;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.smirnova.poputka.domain.dto.ReviewDto;
 import org.smirnova.poputka.domain.dto.UserDto;
+import org.smirnova.poputka.domain.dto.UserSimpleDto;
 import org.smirnova.poputka.domain.entities.PassengerEntity;
 import org.smirnova.poputka.domain.entities.UserEntity;
 import org.smirnova.poputka.domain.enums.UserRole;
 import org.smirnova.poputka.mappers.Mapper;
 import org.smirnova.poputka.repositories.PassengerRepository;
-import org.smirnova.poputka.repositories.TripRepository;
 import org.smirnova.poputka.repositories.UserRepository;
 import org.smirnova.poputka.services.UserService;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,6 @@ public class UserServiceImpl implements UserService {
     //TODO Разделить логику по разным сервисам
     private final PassengerRepository passengerRepository;
     private final Mapper<UserEntity, UserDto> userMapper;
-    private final TripRepository tripRepository;
 
     @Override
     public UserEntity save(UserEntity userEntity) {
@@ -108,5 +108,25 @@ public class UserServiceImpl implements UserService {
                         .build())
                 .toList();
         userDto.setReviews(passengerReviews);
+    }
+
+    @Override
+    public UserSimpleDto getUserSimpleDtoById(Long userId) {
+        UserEntity userEntity = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        return convertToSimpleDto(userEntity);
+    }
+
+
+    private UserSimpleDto convertToSimpleDto(UserEntity userEntity) {
+        return UserSimpleDto.builder()
+                .id(userEntity.getId())
+                .firstName(userEntity.getFirstName())
+                .lastName(userEntity.getLastName())
+                .email(userEntity.getEmail())
+                .phone(userEntity.getPhone())
+                .rate(userEntity.getRate())
+                .build();
     }
 }
