@@ -21,4 +21,6 @@ public interface PassengerRepository extends JpaRepository<PassengerEntity, Long
     List<PassengerEntity> findByTripId(Long tripId);
 
     List<PassengerEntity> findByTripIdAndStatus(Long tripId, PassengerStatus status);
+
+    boolean existsByTripIdAndStatus(Long tripId, PassengerStatus status);
 }

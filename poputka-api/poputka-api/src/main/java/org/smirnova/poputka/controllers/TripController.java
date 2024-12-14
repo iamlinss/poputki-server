@@ -149,17 +149,36 @@ public class TripController {
     )
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping(path = "/{id}")
-    public ResponseEntity<List<TripRsDto>> getUserTrips(@PathVariable Long id) {
+    public ResponseEntity<List<TripWithPendingStatusDto>> getUserTrips(@PathVariable Long id) {
         log.info("CALL: Get user trips by user ID {}", id);
 
         List<TripEntity> tripEntityList = tripService.findUserCreatedTrips(id);
-        List<TripDto> tripDtoList = tripEntityList.stream()
-                .map(tripMapper::mapTo)
-                .toList();
-        List<TripRsDto> tripRsDtoList = tripDtoList.stream()
-                .map(tripService::dtoToInfoDao)
-                .toList();
-        return new ResponseEntity<>(tripRsDtoList, HttpStatus.OK);
+
+        List<TripWithPendingStatusDto> tripWithPendingStatusDtoList = tripEntityList.stream()
+                .map(tripEntity -> {
+                    // Проверяем, есть ли у этой поездки пассажиры с статусом PENDING
+                    boolean hasPendingPassengers = passengerService.existsByTripIdAndStatus(tripEntity.getId(), PassengerStatus.PENDING_CONFIRMATION);
+
+                    TripRsDto tripRsDto = tripService.dtoToInfoDao(tripMapper.mapTo(tripEntity));
+
+                    return TripWithPendingStatusDto.builder()
+                            .id(tripRsDto.getId())
+                            .departureLocation(tripRsDto.getDepartureLocation())
+                            .destinationLocation(tripRsDto.getDestinationLocation())
+                            .departureDateTime(tripRsDto.getDepartureDateTime())
+                            .description(tripRsDto.getDescription())
+                            .seats(tripRsDto.getSeats())
+                            .driverName(tripRsDto.getDriverName())
+                            .userId(tripRsDto.getUserId())
+                            .car(tripRsDto.getCar())
+                            .price(tripRsDto.getPrice())
+                            .status(tripRsDto.getStatus())
+                            .hasPendingPassengers(hasPendingPassengers)
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(tripWithPendingStatusDtoList, HttpStatus.OK);
     }
 
     @Operation(
