@@ -56,6 +56,9 @@
 
 [Водитель](https://github.com/iamlinss/Popytki/blob/main/doc/user%20flow%20(%D0%92%D0%BE%D0%B4%D0%B8%D1%82%D0%B5%D0%BB%D1%8C).png)
 
+### Примеры экранов UI
+https://www.figma.com/design/PQkgQu3JMsPId5t9dff724/%D0%94%D0%B8%D0%B7%D0%B0%D0%B9%D0%BD-%D0%B4%D0%B8%D0%BF%D0%BB%D0%BE%D0%BC?node-id=274-844&p=f&t=PdSZvJdwk9HkQRfl-0 
+
 ## Развёртывание
 
 Для развёртывания приложения доступно два подхода: с использованием Docker и без него. Ниже описаны оба метода.
