@@ -65,6 +65,7 @@ public class SecurityConfig {
                     return configuration;
                 }))
                 .authorizeHttpRequests(auth -> {
+                    auth.requestMatchers("/chat").permitAll();
                     auth.requestMatchers("/api/util/**").permitAll();
                     auth.requestMatchers("/api/trips/**").permitAll();
                     auth.requestMatchers("/api/data/**").permitAll();
