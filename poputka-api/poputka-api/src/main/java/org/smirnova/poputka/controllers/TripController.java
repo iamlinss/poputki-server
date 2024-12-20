@@ -287,10 +287,6 @@ public class TripController {
 
         List<PassengerEntity> passengers = tripService.findPassengersByTripIdAndStatus(tripId, status);
 
-        if (passengers.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-
         List<PassengerDTO> passengerDTOs = passengers.stream().map(passenger -> {
             UserSimpleDto userSimpleDto = userService.getUserSimpleDtoById(passenger.getUserId());
             return PassengerDTO.builder()
