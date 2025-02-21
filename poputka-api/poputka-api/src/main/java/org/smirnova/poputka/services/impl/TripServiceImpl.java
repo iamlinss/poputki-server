@@ -1,6 +1,11 @@
 package org.smirnova.poputka.services.impl;
 
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import org.smirnova.poputka.domain.dto.CityDto;
 import org.smirnova.poputka.domain.dto.PassengerWithTripDto;
@@ -19,7 +24,11 @@ import org.smirnova.poputka.services.TripService;
 import org.smirnova.poputka.services.UserService;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -38,6 +47,64 @@ public class TripServiceImpl implements TripService {
     private final Mapper<CarEntity, CarDto> carMapper;
     private final PassengerRepository passengerRepository;
     private final EmailServiceImpl emailService;
+    private final EntityManager entityManager;
+
+    @Override
+    public List<TripEntity> findTripsByFilters(Long userId,
+                                               LocalDate date,
+                                               LocalTime startedAt,
+                                               Long departureLocationId,
+                                               Long destinationLocationId,
+                                               TripStatus status,
+                                               Integer seats) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<TripEntity> cq = cb.createQuery(TripEntity.class);
+        Root<TripEntity> trip = cq.from(TripEntity.class);
+
+        List<Predicate> predicates = new ArrayList<>();
+
+        // Фильтр по userId
+        if (userId != null) {
+            predicates.add(cb.equal(trip.get("user").get("id"), userId));
+        }
+
+        // Фильтр по дате и времени
+        if (date != null) {
+            // Извлекаем только дату из departureDateTime
+            Predicate sameDay = cb.equal(cb.function("DATE", LocalDate.class, trip.get("departureDateTime")), date);
+            if (startedAt != null) {
+                // Формируем дату и время, с которого начинаем поиск
+                LocalDateTime dateTimeFrom = date.atTime(startedAt);
+                Predicate afterStartedAt = cb.greaterThanOrEqualTo(trip.get("departureDateTime"), dateTimeFrom);
+                predicates.add(cb.and(sameDay, afterStartedAt));
+            } else {
+                predicates.add(sameDay);
+            }
+        }
+
+        // Фильтр по месту отправления
+        if (departureLocationId != null) {
+            predicates.add(cb.equal(trip.get("departureLocation").get("id"), departureLocationId));
+        }
+
+        // Фильтр по месту назначения
+        if (destinationLocationId != null) {
+            predicates.add(cb.equal(trip.get("destinationLocation").get("id"), destinationLocationId));
+        }
+
+        // Фильтр по статусу поездки
+        if (status != null) {
+            predicates.add(cb.equal(trip.get("status"), status));
+        }
+
+        // Фильтр по количеству оставшихся мест (если, например, пользователь хочет видеть поездки, где доступно не менее N мест)
+        if (seats != null) {
+            predicates.add(cb.greaterThanOrEqualTo(trip.get("seats"), seats));
+        }
+
+        cq.where(predicates.toArray(new Predicate[0]));
+        return entityManager.createQuery(cq).getResultList();
+    }
 
     @Override
     public TripEntity save(TripEntity tripEntity) {

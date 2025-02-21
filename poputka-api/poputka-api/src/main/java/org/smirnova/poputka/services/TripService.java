@@ -11,11 +11,20 @@ import org.smirnova.poputka.domain.enums.PassengerStatus;
 import org.smirnova.poputka.domain.enums.TripStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public interface TripService {
+    List<TripEntity> findTripsByFilters(Long userId,
+                                        LocalDate date,
+                                        LocalTime startedAt,
+                                        Long departureLocationId,
+                                        Long destinationLocationId,
+                                        TripStatus status,
+                                        Integer seats);
 
     TripEntity save(TripEntity carEntity);
 

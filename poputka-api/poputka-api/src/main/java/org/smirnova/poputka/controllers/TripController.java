@@ -1,6 +1,7 @@
 package org.smirnova.poputka.controllers;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -21,10 +22,14 @@ import org.smirnova.poputka.services.TripService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smirnova.poputka.services.UserService;
+import org.springframework.dao.DataAccessException;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,6 +46,66 @@ public class TripController {
     private final TripService tripService;
     private final PassengerService passengerService;
     private final UserMapperImpl userMapperImpl;
+
+    @Operation(
+            summary = "Получение списка поездок с фильтрами",
+            description = "Возвращает массив поездок с возможностью фильтрации по userId, дате, месту отправления, месту назначения, статусу и количеству оставшихся мест. " +
+                    "Параметр date задаёт конкретную дату (формат: YYYY-MM-DD), а startedAt – время (формат: HH:mm:ss), " +
+                    "с которого начинать поиск поездок в указанную дату. Если заданы параметры status и seats, " +
+                    "возвращаются поездки с соответствующим статусом и количеством мест не меньше указанного.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Список поездок успешно получен",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = TripRsDto[].class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Не авторизован/ Токен не валидный",
+                            content = @Content(schema = @Schema())
+                    )
+            }
+    )
+    @SecurityRequirement(name = "bearerAuth")
+    @GetMapping
+    public ResponseEntity<List<TripRsDto>> getTrips(
+            @Parameter(description = "Идентификатор пользователя")
+            @RequestParam(value = "userId", required = false) Long userId,
+
+            @Parameter(description = "Дата поездки (формат: YYYY-MM-DD)", example = "2025-02-22")
+            @RequestParam(value = "date")
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+
+            @Parameter(description = "Время, начиная с которого необходимо искать поездки (формат: HH:mm:ss)", example = "14:30:00")
+            @RequestParam(value = "startedAt", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime startedAt,
+
+            @Parameter(description = "Идентификатор места отправления")
+            @RequestParam(value = "departureLocation", required = false) Long departureLocationId,
+
+            @Parameter(description = "Идентификатор места назначения")
+            @RequestParam(value = "destinationLocation", required = false) Long destinationLocationId,
+
+            @Parameter(description = "Статус поездки", example = "CREATED")
+            @RequestParam(value = "status", required = false) TripStatus status,
+
+            @Parameter(description = "Минимальное количество оставшихся мест", example = "2")
+            @RequestParam(value = "seats", required = false) Integer seats) {
+        try {
+            List<TripEntity> trips = tripService.findTripsByFilters(userId, date, startedAt, departureLocationId, destinationLocationId, status, seats);
+            List<TripRsDto> tripsDto = trips.stream()
+                    .map(tripMapper::mapTo)
+                    .map(tripService::dtoToInfoDao)
+                    .collect(Collectors.toList());
+            return new ResponseEntity<>(tripsDto, HttpStatus.OK);
+        } catch (DataAccessException ex) {
+            log.error("Ошибка при выполнении запроса с фильтрами", ex);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     @Operation(
             description = "Создание поездки (id не нужно передавать, так на всякий оставил)",
