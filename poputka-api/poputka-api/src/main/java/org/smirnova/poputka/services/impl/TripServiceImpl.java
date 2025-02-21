@@ -25,8 +25,6 @@ import org.smirnova.poputka.services.UserService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +50,6 @@ public class TripServiceImpl implements TripService {
     @Override
     public List<TripEntity> findTripsByFilters(Long userId,
                                                LocalDate date,
-                                               LocalTime startedAt,
                                                Long departureLocationId,
                                                Long destinationLocationId,
                                                TripStatus status,
@@ -71,15 +68,7 @@ public class TripServiceImpl implements TripService {
         // Фильтр по дате и времени
         if (date != null) {
             // Извлекаем только дату из departureDateTime
-            Predicate sameDay = cb.equal(cb.function("DATE", LocalDate.class, trip.get("departureDateTime")), date);
-            if (startedAt != null) {
-                // Формируем дату и время, с которого начинаем поиск
-                LocalDateTime dateTimeFrom = date.atTime(startedAt);
-                Predicate afterStartedAt = cb.greaterThanOrEqualTo(trip.get("departureDateTime"), dateTimeFrom);
-                predicates.add(cb.and(sameDay, afterStartedAt));
-            } else {
-                predicates.add(sameDay);
-            }
+            predicates.add(cb.equal(cb.function("DATE", LocalDate.class, trip.get("departureDateTime")), date));
         }
 
         // Фильтр по месту отправления

@@ -29,7 +29,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -79,10 +78,6 @@ public class TripController {
             @RequestParam(value = "date")
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
 
-            @Parameter(description = "Время, начиная с которого необходимо искать поездки (формат: HH:mm:ss)", example = "14:30:00")
-            @RequestParam(value = "startedAt", required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime startedAt,
-
             @Parameter(description = "Идентификатор места отправления")
             @RequestParam(value = "departureLocation", required = false) Long departureLocationId,
 
@@ -95,7 +90,7 @@ public class TripController {
             @Parameter(description = "Минимальное количество оставшихся мест", example = "2")
             @RequestParam(value = "seats", required = false) Integer seats) {
         try {
-            List<TripEntity> trips = tripService.findTripsByFilters(userId, date, startedAt, departureLocationId, destinationLocationId, status, seats);
+            List<TripEntity> trips = tripService.findTripsByFilters(userId, date, departureLocationId, destinationLocationId, status, seats);
             List<TripRsDto> tripsDto = trips.stream()
                     .map(tripMapper::mapTo)
                     .map(tripService::dtoToInfoDao)

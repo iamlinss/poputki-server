@@ -12,7 +12,6 @@ import org.smirnova.poputka.domain.enums.TripStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,7 +19,6 @@ import java.util.Optional;
 public interface TripService {
     List<TripEntity> findTripsByFilters(Long userId,
                                         LocalDate date,
-                                        LocalTime startedAt,
                                         Long departureLocationId,
                                         Long destinationLocationId,
                                         TripStatus status,
