@@ -12,6 +12,7 @@ import org.smirnova.poputka.domain.enums.TripStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,7 +23,8 @@ public interface TripService {
                                         Long departureLocationId,
                                         Long destinationLocationId,
                                         TripStatus status,
-                                        Integer seats);
+                                        Integer seats,
+                                        LocalTime startTime);
 
     TripEntity save(TripEntity carEntity);
 

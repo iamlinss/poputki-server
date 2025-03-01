@@ -29,6 +29,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,10 +49,10 @@ public class TripController {
 
     @Operation(
             summary = "Получение списка поездок с фильтрами",
-            description = "Возвращает массив поездок с возможностью фильтрации по userId, дате, месту отправления, месту назначения, статусу и количеству оставшихся мест. " +
-                    "Параметр date задаёт конкретную дату (формат: YYYY-MM-DD), а startedAt – время (формат: HH:mm:ss), " +
-                    "с которого начинать поиск поездок в указанную дату. Если заданы параметры status и seats, " +
-                    "возвращаются поездки с соответствующим статусом и количеством мест не меньше указанного.",
+            description = "Возвращает массив поездок с возможностью фильтрации по userId, дате, месту отправления, месту назначения, статусу, количеству оставшихся мест и начальному времени. " +
+                    "Параметр date задаёт конкретную дату (формат: YYYY-MM-DD), " +
+                    "startTime — время (формат: HH:mm), после которого должны начинаться поездки, независимо от даты. " +
+                    "Если заданы параметры status и seats, возвращаются поездки с соответствующим статусом и количеством мест не меньше указанного.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
@@ -88,9 +89,13 @@ public class TripController {
             @RequestParam(value = "status", required = false) TripStatus status,
 
             @Parameter(description = "Минимальное количество оставшихся мест", example = "2")
-            @RequestParam(value = "seats", required = false) Integer seats) {
+            @RequestParam(value = "seats", required = false) Integer seats,
+
+            @Parameter(description = "Начальное время поездки (формат: HH:mm)", example = "09:00")
+            @RequestParam(value = "startTime", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime startTime) {
         try {
-            List<TripEntity> trips = tripService.findTripsByFilters(userId, date, departureLocationId, destinationLocationId, status, seats);
+            List<TripEntity> trips = tripService.findTripsByFilters(userId, date, departureLocationId, destinationLocationId, status, seats, startTime);
             List<TripRsDto> tripsDto = trips.stream()
                     .map(tripMapper::mapTo)
                     .map(tripService::dtoToInfoDao)

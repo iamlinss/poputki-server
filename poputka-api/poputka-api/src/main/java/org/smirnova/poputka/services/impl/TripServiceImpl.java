@@ -2,10 +2,7 @@ package org.smirnova.poputka.services.impl;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 import lombok.RequiredArgsConstructor;
 import org.smirnova.poputka.domain.dto.CityDto;
 import org.smirnova.poputka.domain.dto.PassengerWithTripDto;
@@ -25,6 +22,7 @@ import org.smirnova.poputka.services.UserService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +51,8 @@ public class TripServiceImpl implements TripService {
                                                Long departureLocationId,
                                                Long destinationLocationId,
                                                TripStatus status,
-                                               Integer seats) {
+                                               Integer seats,
+                                               LocalTime startTime) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<TripEntity> cq = cb.createQuery(TripEntity.class);
         Root<TripEntity> trip = cq.from(TripEntity.class);
@@ -89,6 +88,12 @@ public class TripServiceImpl implements TripService {
         // Фильтр по количеству оставшихся мест (если, например, пользователь хочет видеть поездки, где доступно не менее N мест)
         if (seats != null) {
             predicates.add(cb.greaterThanOrEqualTo(trip.get("seats"), seats));
+        }
+
+        // Фильтр по начальному времени (независимо от даты)
+        if (startTime != null) {
+            Expression<LocalTime> timeExpression = cb.function("TIME", LocalTime.class, trip.get("departureDateTime"));
+            predicates.add(cb.greaterThanOrEqualTo(timeExpression, startTime));
         }
 
         cq.where(predicates.toArray(new Predicate[0]));
