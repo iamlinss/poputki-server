@@ -92,8 +92,8 @@ public class TripServiceImpl implements TripService {
 
         // Фильтр по начальному времени (независимо от даты)
         if (startTime != null) {
-            Expression<LocalTime> timeExpression = cb.function("TIME", LocalTime.class, trip.get("departureDateTime"));
-            predicates.add(cb.greaterThanOrEqualTo(timeExpression, startTime));
+            Expression<String> timeAsString = cb.function("to_char", String.class, trip.get("departureDateTime"), cb.literal("HH24:MI"));
+            predicates.add(cb.greaterThanOrEqualTo(timeAsString, startTime.format(DateTimeFormatter.ofPattern("HH:mm"))));
         }
 
         cq.where(predicates.toArray(new Predicate[0]));

@@ -30,6 +30,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -92,8 +94,18 @@ public class TripController {
             @RequestParam(value = "seats", required = false) Integer seats,
 
             @Parameter(description = "Начальное время поездки (формат: HH:mm)", example = "09:00")
-            @RequestParam(value = "startTime", required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime startTime) {
+            @RequestParam(value = "startTime", required = false) String startTimeStr) {
+
+        LocalTime startTime = null;
+        if (startTimeStr != null && !startTimeStr.isEmpty()) {
+            try {
+                startTime = LocalTime.parse(startTimeStr, DateTimeFormatter.ofPattern("HH:mm"));
+            } catch (DateTimeParseException ex) {
+                log.error("Ошибка парсинга startTime: {}", startTimeStr, ex);
+                return ResponseEntity.badRequest().build();
+            }
+        }
+
         try {
             List<TripEntity> trips = tripService.findTripsByFilters(userId, date, departureLocationId, destinationLocationId, status, seats, startTime);
             List<TripRsDto> tripsDto = trips.stream()
