@@ -123,7 +123,7 @@ public class TripServiceImpl implements TripService {
         if (newStatus == TripStatus.CANCELLED) {
             List<PassengerEntity> passengers = passengerRepository.findByTripId(id);
             for (PassengerEntity passenger : passengers) {
-                updatePassengerStatus(passenger.getId(), PassengerStatus.CANCELLED_BY_PASSENGER);
+                updatePassengerStatus(passenger.getId(), PassengerStatus.REJECTED_BY_DRIVER);
             }
         }
 
