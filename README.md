@@ -73,7 +73,7 @@ https://www.figma.com/design/PQkgQu3JMsPId5t9dff724/%D0%94%D0%B8%D0%B7%D0%B0%D0%
 
 2. **Перейдите к директории с Dockerfile**:
    ```bash
-   cd poputka-api/poputka-api
+   cd poputka-api
    ```
 
 3. **Постройте Docker-образ**:
@@ -104,7 +104,7 @@ https://www.figma.com/design/PQkgQu3JMsPId5t9dff724/%D0%94%D0%B8%D0%B7%D0%B0%D0%
 2. **Настройте параметры подключения к базе данных**:
    Отредактируйте файл `application.properties`, расположенный по пути:
    ```
-   poputka-api/poputka-api/src/main/resources/application.properties
+   poputka-api/src/main/resources/application.properties
    ```
    Убедитесь, что строки с параметрами подключения выглядят корректно:
    ```properties
@@ -116,7 +116,7 @@ https://www.figma.com/design/PQkgQu3JMsPId5t9dff724/%D0%94%D0%B8%D0%B7%D0%B0%D0%
 3. **Соберите проект**:
    Убедитесь, что у вас установлен Maven, затем выполните:
    ```bash
-   cd poputka-api/poputka-api
+   cd poputka-api
    mvn clean package
    ```
 

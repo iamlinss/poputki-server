@@ -24,8 +24,8 @@ jobs:
 
       # Смена директории на расположение проекта
       - name: Change to project directory
-        run: cd poputka-api/poputka-api/
+        run: cd poputka-api/
 
       # Сборка проекта с использованием Maven
       - name: Build with Maven (without tests)
-        run: mvn -B package --file poputka-api/poputka-api/pom.xml -DskipTests
+        run: mvn -B package --file poputka-api/pom.xml -DskipTests
