@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 public class TripDetails {
     private LocalDateTime departureDateTime;
     private int seats;
+    private Long driverId;
     private String driverName;
     private int price;
     private TripStatus status;
