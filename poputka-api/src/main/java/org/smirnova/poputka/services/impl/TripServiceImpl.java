@@ -288,6 +288,7 @@ public class TripServiceImpl implements TripService {
                     TripDetails tripDetails = TripDetails.builder()
                             .departureDateTime(tripEntity.getDepartureDateTime())
                             .seats(tripEntity.getSeats())
+                            .driverId(tripEntity.getUser().getId())
                             .driverName(tripEntity.getDriverName())
                             .price(tripEntity.getPrice())
                             .status(tripEntity.getStatus())
