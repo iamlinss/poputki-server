@@ -1,13 +1,26 @@
-FROM openjdk:17-jdk-slim AS build
+# Stage 1: Build the application
+FROM maven:3.9.4-eclipse-temurin-17 AS build
 
-COPY pom.xml mvnw ./
-COPY .mvn .mvn
-RUN ./mvnw dependency:resolve
+WORKDIR /usr/app
 
-COPY src src
-RUN ./mvnw package -Dmaven.test.skip=true
+# Copy the project files
+COPY pom.xml .
+COPY src ./src
 
-FROM openjdk:17-jdk-slim
-WORKDIR demo
-COPY --from=build target/*.jar demo.jar
-ENTRYPOINT ["java", "-jar", "demo.jar"]
+# Build the project
+RUN mvn clean package -DskipTests
+
+# Stage 2: Run the application
+FROM eclipse-temurin:17-jre-jammy
+
+# Set the location of the jar file
+ARG JAR_FILE=/usr/app/target/*.jar
+
+# Copy the built jar file to the runner location
+COPY --from=build $JAR_FILE /app/poputka-api.jar
+
+# Expose the application port inside the container
+EXPOSE 8080
+
+# Command to run the application
+ENTRYPOINT ["java", "-jar", "/app/poputka-api.jar"]
