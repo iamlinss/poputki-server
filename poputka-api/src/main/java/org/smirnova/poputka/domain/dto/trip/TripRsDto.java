@@ -38,6 +38,9 @@ public class TripRsDto {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String driverName;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Double rate;
+
     private Long userId;
 
     private CarDto car;

@@ -172,10 +172,21 @@ public class TripServiceImpl implements TripService {
                 tripDto.getDescription(),
                 tripDto.getSeats(),
                 tripDto.getDriverName(),
+                calculateDriverRating(tripDto.getUser().getId()),
                 tripDto.getUser().getId(),
                 tripDto.getCar(),
                 tripDto.getPrice(),
                 tripDto.getStatus());
+    }
+
+    public double calculateDriverRating(Long driverUserId) {
+        List<PassengerEntity> passengerReviews = passengerRepository.findAllByTripUser(driverUserId);
+
+        return passengerReviews.stream()
+                .filter(review -> review.getDriverRating() != null)
+                .mapToInt(PassengerEntity::getDriverRating)
+                .average()
+                .orElse(0.0);
     }
 
     @Override
