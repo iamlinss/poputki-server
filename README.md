@@ -122,7 +122,7 @@ https://www.figma.com/design/PQkgQu3JMsPId5t9dff724/%D0%94%D0%B8%D0%B7%D0%B0%D0%
 
 4. **Запустите приложение**:
    ```bash
-   java -jar target/poputka-v0.0.2.jar
+   java -jar target/poputka-v1.jar
    ```
 
 5. **Проверьте работу приложения**:

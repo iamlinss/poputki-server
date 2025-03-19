@@ -1,5 +1,5 @@
 # Stage 1: Build the application
-FROM maven:3.9.4-eclipse-temurin-17 AS build
+FROM maven:3.9.9-eclipse-temurin-23-alpine AS build
 
 WORKDIR /usr/app
 
@@ -11,7 +11,7 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 # Stage 2: Run the application
-FROM eclipse-temurin:17-jre-jammy
+FROM eclipse-temurin:23-alpine
 
 # Set the location of the jar file
 ARG JAR_FILE=/usr/app/target/*.jar
