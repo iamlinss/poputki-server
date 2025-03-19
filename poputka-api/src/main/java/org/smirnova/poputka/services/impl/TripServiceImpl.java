@@ -138,6 +138,18 @@ public class TripServiceImpl implements TripService {
         PassengerEntity passenger = findPassengerById(id);
         PassengerStatus oldStatus = passenger.getStatus();
 
+        // Чтобы избежать повторного возврата мест, проверяем, что предыдущий статус не был уже отменённым
+        if (!(oldStatus == PassengerStatus.CANCELLED_BY_PASSENGER || oldStatus == PassengerStatus.REJECTED_BY_DRIVER)) {
+            // Если новый статус соответствует отмене бронирования
+            if (newStatus == PassengerStatus.CANCELLED_BY_PASSENGER || newStatus == PassengerStatus.REJECTED_BY_DRIVER) {
+                // Находим связанную поездку
+                TripEntity trip = tripRepository.findById(passenger.getTripId())
+                        .orElseThrow(() -> new EntityNotFoundException("Поездка не найдена"));
+                trip.setSeats(trip.getSeats() + passenger.getSeats());
+                tripRepository.save(trip);
+            }
+        }
+
         passenger.setStatus(newStatus);
         passengerRepository.save(passenger);
 
@@ -145,6 +157,7 @@ public class TripServiceImpl implements TripService {
                 .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден."));
         sendStatusUpdateEmail(user, oldStatus, newStatus);
     }
+
 
     @Override
     public TripDto daoToDto(TripRqDto tripRqDto) {
@@ -187,13 +200,6 @@ public class TripServiceImpl implements TripService {
                 .mapToInt(PassengerEntity::getDriverRating)
                 .average()
                 .orElse(0.0);
-    }
-
-    @Override
-    public List<TripEntity> filterTrip(TripFilterDto filter) {
-        CityEntity departure = findCity(filter.getDepartureLocationId());
-        CityEntity destination = findCity(filter.getDestinationLocationId());
-        return tripRepository.findAllByFilter(departure, destination, filter.getSeats(), filter.getStatus());
     }
 
     @Override
@@ -316,26 +322,6 @@ public class TripServiceImpl implements TripService {
                             .build();
                 })
                 .collect(Collectors.toList());
-    }
-
-
-    public TripRsDto bookTrip(PassengerEntity passengerEntity) {
-        // Получаем поездку по ID
-        TripEntity tripEntity = tripRepository.findById(passengerEntity.getTripId())
-                .orElseThrow(() -> new EntityNotFoundException("Trip not found"));
-
-        // Обновляем количество мест
-        tripEntity.setSeats(tripEntity.getSeats() - passengerEntity.getSeats());
-        TripEntity savedTripEntity = tripRepository.save(tripEntity);
-
-        // Сохраняем информацию о пассажире
-        passengerRepository.save(passengerEntity);
-
-        // Отправляем уведомление водителю
-        sendBookingNotification(tripEntity, passengerEntity);
-
-        // Преобразуем TripEntity в TripRsDto
-        return convertToTripRsDto(savedTripEntity);
     }
 
     public void sendBookingNotification(TripEntity tripEntity, PassengerEntity passengerEntity) {

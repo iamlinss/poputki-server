@@ -184,32 +184,6 @@ public class TripController {
     }
 
     @Operation(
-            description = "Фильтрация поездок по параметрам, включая статус",
-            summary = "Фильтрация поездок",
-            responses = {
-                    @ApiResponse(description = "Успешно", responseCode = "200"),
-                    @ApiResponse(description = "Некорректный запрос", responseCode = "400")
-            }
-    )
-    @PostMapping(path = "/filter")
-    public ResponseEntity<List<TripRsDto>> filterTrip(@RequestBody TripFilterDto filter) {
-        log.info("CALL: Filter trip: {}", filter);
-        try {
-            List<TripEntity> tripEntityList = tripService.filterTrip(filter);
-            List<TripDto> tripDtoList = tripEntityList.stream()
-                    .map(tripMapper::mapTo)
-                    .toList();
-            List<TripRsDto> tripRsDtoList = tripDtoList.stream()
-                    .map(tripService::dtoToInfoDao)
-                    .toList();
-            return new ResponseEntity<>(tripRsDtoList, HttpStatus.OK);
-        } catch (Exception e) {
-            log.error("Error filtering trips", e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-    }
-
-    @Operation(
             description = "Получить созданные поездки пользователя по ID",
             summary = "Поездки по ID пользователя (созданные)",
             responses = {

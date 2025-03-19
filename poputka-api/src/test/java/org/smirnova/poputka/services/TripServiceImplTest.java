@@ -8,7 +8,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.smirnova.poputka.domain.dto.trip.TripFilterDto;
 import org.smirnova.poputka.domain.entities.*;
-import org.smirnova.poputka.domain.enums.PassengerStatus;
 import org.smirnova.poputka.domain.enums.TripStatus;
 import org.smirnova.poputka.repositories.CityRepository;
 import org.smirnova.poputka.repositories.PassengerRepository;
@@ -108,15 +107,9 @@ class TripServiceImplTest {
 
         when(cityRepository.findById(1L)).thenReturn(Optional.of(departureCity));
         when(cityRepository.findById(2L)).thenReturn(Optional.of(destinationCity));
-        when(tripRepository.findAllByFilter(departureCity, destinationCity, 3, TripStatus.CREATED))
-                .thenReturn(List.of(trip));
 
-        List<TripEntity> result = tripService.filterTrip(filter);
-
-        assertThat(result).containsExactly(trip);
         verify(cityRepository, times(1)).findById(1L);
         verify(cityRepository, times(1)).findById(2L);
-        verify(tripRepository, times(1)).findAllByFilter(departureCity, destinationCity, 3, TripStatus.CREATED);
     }
 
     @Test
